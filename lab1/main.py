@@ -29,7 +29,7 @@ def main() :
     except IOError:
         print(f"Failed to write to the file '{result_path}'.")
         sys.exit(0)
-    print(f"data have been pasted into '{result_path}' ")
+    print(f"Scanning results have been pasted into '{result_path}' ")
     
 
 
