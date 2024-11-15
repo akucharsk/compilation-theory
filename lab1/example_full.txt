@@ -14,13 +14,11 @@ res1 = 60.500;
 res2 = 60.;
 res3 = .500;
 res4 = 60.52E2;
-str = "Hello world"; c = "ahoj przygodo"
+str = "Hello world";
 
 if (m==n) { 
     if (m >= n) 
         print res;
-        breakout of printer;
-
 }
 
 
