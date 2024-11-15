@@ -1,13 +1,14 @@
 from sly import Parser
-from scanner_sly import Scanner
-
-
+from lab1.scanner_sly import Scanner
+import os
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+debug_path = os.path.join(SCRIPT_PATH, "parser_debug_data", "parser.out")
 
 class Mparser(Parser):
 
     tokens = Scanner.tokens
 
-    debugfile = 'parser.out'
+    debugfile = debug_path
 
     precedence = (
         ("nonassoc", 'IFX'),
@@ -24,69 +25,69 @@ class Mparser(Parser):
         super().__init__()
         self.variables = {}
 
-    @_('instructions')
+    @_('instructions') # type: ignore
     def instructions_opt(self, p):
         pass
 
-    @_('')
+    @_('') # type: ignore
     def instructions_opt(self, p):
         pass
 
-    @_('instructions instruction')
+    @_('instructions instruction') # type: ignore
     def instructions(self, p):
         return p
 
-    @_('instruction')
+    @_('instruction') # type: ignore
     def instructions(self, p):
         return p
 
-    @_('PRINT elements LINE_END')
+    @_('PRINT elements LINE_END') # type: ignore
     def instruction(self, p):
-        print(p.elements)
+        # print(p.elements)
         return p
 
-    @_('RETURN expr LINE_END')
+    @_('RETURN expr LINE_END') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('BREAK LINE_END',
+    @_('BREAK LINE_END', # type: ignore
        'CONTINUE LINE_END')
     def instruction(self, p):
         return p
 
-    @_('LBRACE instructions RBRACE')
+    @_('LBRACE instructions RBRACE') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('IF LPAREN expr RPAREN instruction %prec IFX')
+    @_('IF LPAREN expr RPAREN instruction %prec IFX') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('IF LPAREN expr RPAREN instruction ELSE instruction')
+    @_('IF LPAREN expr RPAREN instruction ELSE instruction') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('WHILE LPAREN expr RPAREN instruction')
+    @_('WHILE LPAREN expr RPAREN instruction') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('FOR ID ASSIGN expr RANGE expr instruction')
+    @_('FOR ID ASSIGN expr RANGE expr instruction') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('assignment LINE_END')
+    @_('assignment LINE_END') # type: ignore
     def instruction(self, p):
         return p
 
-    @_('ID assign expr')
+    @_('ID assign expr') # type: ignore
     def assignment(self, p):
         return p
 
-    @_('ID LBRACKET elements RBRACKET assign expr')
+    @_('ID LBRACKET elements RBRACKET assign expr') # type: ignore
     def assignment(self, p):
         return p
 
-    @_('ASSIGN',
+    @_('ASSIGN', # type: ignore
        'ADDASSIGN',
        'SUBASSIGN',
        'MULASSIGN',
@@ -94,7 +95,7 @@ class Mparser(Parser):
     def assign(self, p):
         return p
 
-    @_('expr EQ expr',
+    @_('expr EQ expr', # type: ignore
        'expr NEQ expr',
        'expr LT expr',
        'expr GT expr',
@@ -103,66 +104,66 @@ class Mparser(Parser):
     def expr(self, p):
         return p
 
-    @_('expr PLUS expr',
+    @_('expr PLUS expr', # type: ignore
        'expr MINUS expr',
        'expr TIMES expr',
        'expr DIVIDE expr')
     def expr(self, p):
         return p
 
-    @_('expr DOTADD expr',
+    @_('expr DOTADD expr', # type: ignore
        'expr DOTSUB expr',
        'expr DOTMUL expr',
        'expr DOTDIV expr')
     def expr(self, p):
         return p
 
-    @_('LPAREN expr RPAREN')
+    @_('LPAREN expr RPAREN') # type: ignore
     def expr(self, p):
         return p
 
-    @_('INTNUM')
+    @_('INTNUM') # type: ignore
     def expr(self, p):
         return p
 
-    @_('FLOATNUM')
+    @_('FLOATNUM') # type: ignore
     def expr(self, p):
         return p
 
-    @_('STRING')
+    @_('STRING') # type: ignore
     def expr(self, p):
         return p
 
-    @_('ID')
+    @_('ID') # type: ignore
     def expr(self, p):
         return p
 
-    @_('EYE LPAREN elements RPAREN',
+    @_('EYE LPAREN elements RPAREN', # type: ignore
        'ZEROS LPAREN elements RPAREN',
        'ONES LPAREN elements RPAREN')
     def expr(self, p):
         return p
 
-    @_('MINUS expr %prec UMINUS')
+    @_('MINUS expr %prec UMINUS') # type: ignore
     def expr(self, p):
         return p
 
-    @_('vector')
+    @_('vector') # type: ignore
     def expr(self, p):
         return p
 
-    @_('LBRACKET elements RBRACKET')
+    @_('LBRACKET elements RBRACKET') # type: ignore
     def vector(self, p):
         return p
 
-    @_('expr COMMA elements')
+    @_('expr COMMA elements') # type: ignore
     def elements(self, p):
         return p
 
-    @_('expr')
+    @_('expr') # type: ignore
     def elements(self, p):
         return p
 
-    @_('expr TRANSPOSE')
+    @_('expr TRANSPOSE') # type: ignore
     def expr(self, p):
         return p

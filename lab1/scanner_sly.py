@@ -1,9 +1,4 @@
-import sys
 from sly import Lexer
-import os
-
-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-
 
 class Scanner(Lexer):
 
@@ -95,21 +90,3 @@ class Scanner(Lexer):
     @_(r'#.*') # type: ignore
     def ignore_comment(self, t):
         pass
-
-
-if __name__ == '__main__':
-
-    try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example_full.txt"
-        file = open(os.path.join(SCRIPT_PATH,filename), "r")
-    except IOError:
-        print("Cannot open {0} file".format(filename))
-        sys.exit(0)
-
-    text = file.read()
-    print(text)
-    lexer = Scanner()
-    line = 1
-    print(float('62.51E2'))
-    for tok in lexer.tokenize(text):
-        print(tok)
