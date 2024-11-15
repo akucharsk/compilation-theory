@@ -1,5 +1,8 @@
 import sys
 from sly import Lexer
+import os
+
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class Scanner(Lexer):
@@ -77,21 +80,21 @@ class Scanner(Lexer):
               "RETURN", "EYE", "ZEROS", "ONES", "PRINT", "ID",
               "INTNUM", "FLOATNUM", "STRING"}
 
-    @_(r'\n')
+    @_(r'\n') # type: ignore
     def ignore_newline(self, t):
         self.lineno += 1
 
-    @_('')
+    @_('') # type: ignore
     def FLOATNUM(self, t):
         t.value = float(t.value)
         return t
 
-    @_(r'[+-]?[1-9]\d*')
+    @_(r'[+-]?[1-9]\d*') # type: ignore
     def INTNUM(self, t):
         t.value = int(t.value)
         return t
 
-    @_(r'#.*')
+    @_(r'#.*') # type: ignore
     def ignore_comment(self, t):
         pass
 
@@ -100,7 +103,7 @@ if __name__ == '__main__':
 
     try:
         filename = sys.argv[1] if len(sys.argv) > 1 else "example_full.txt"
-        file = open(filename, "r")
+        file = open(os.path.join(SCRIPT_PATH,filename), "r")
     except IOError:
         print("Cannot open {0} file".format(filename))
         sys.exit(0)
