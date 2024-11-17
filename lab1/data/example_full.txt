@@ -22,6 +22,3 @@ if (m==n) {
         breakout of printer;
 
 }
-
-
-

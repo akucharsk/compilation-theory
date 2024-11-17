@@ -4,3 +4,5 @@ lab*/*.html
 
 lab*/lab*-intro*.pdf
 lab*/*.out
+
+__pycache__/
