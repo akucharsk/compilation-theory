@@ -1,23 +1,37 @@
-import sys
 from sly import Lexer
-
 
 class Scanner(Lexer):
 
     ignore = r' \t'
-    ignore_comment = r'#.*\n'
-    ignore_newline = r'\n+'
+    ignore_comment = r'#.*'
+    ignore_newline = r'\n'
 
-    ADD = r'\+'
-    SUB = r'-'
-    MUL = r'\*'
-    DIV = r'/'
+    tokens = {
+        "PLUS", "MINUS", "TIMES", "DIVIDE", "ASSIGN", "ADDASSIGN",
+        "SUBASSIGN", "MULASSIGN", "DIVASSIGN", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
+        "LBRACKET", "RBRACKET", "DOTADD", "DOTSUB", "DOTMUL", "DOTDIV",
+        "EQ", "NEQ", "LT", "LTE", "GT", "GTE", "RANGE", "COMMA", "LINE_END", "TRANSPOSE",
+        "FOR", "WHILE", "IF", "ELSE", "RETURN", "BREAK", "CONTINUE", "EYE", "ZEROS", "ONES", "PRINT",
+        "ID", "INTNUM", "FLOATNUM", "STRING"
+    }
+
+    EQ = r'=='
+    NEQ = r'!='
+    LTE = r'<='
+    LT = r'<'
+    GTE = r'>='
+    GT = r'>'
 
     ASSIGN = r'='
     ADDASSIGN = r'\+='
     SUBASSIGN = r'-='
     MULASSIGN = r'\*='
     DIVASSIGN = r'\/='
+
+    PLUS = r'\+'
+    MINUS = r'-'
+    TIMES = r'\*'
+    DIVIDE = r'/'
 
     LPAREN = r'\('
     RPAREN = r'\)'
@@ -31,66 +45,48 @@ class Scanner(Lexer):
     DOTMUL = r'\.\*'
     DOTDIV = r'\./'
 
-    EQ = r'=='
-    NEQ = r'!='
-    LT = r'<'
-    LTE = r'<='
-    GT = r'>'
-    GTE = r'>='
-
     RANGE = r':'
     COMMA = r','
     LINE_END = r';'
 
     TRANSPOSE = r'\''
 
-    IF = r'if'
-    ELSE = r'else'
-    WHILE = r'while'
-    FOR = r'for'
-
-    BREAK = r'break'
-    CONTINUE = r'continue'
-    RETURN = r'return'
-
-    EYE = r'eye'
-    ZEROS = r'zeros'
-    ONES = r'ones'
-
-    PRINT = r'print'
-
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    FLOATNUM = r'\d+\.|\d*\.\d+'
-    INTNUM = r'[1-9]\d*'
-    STRING = r'".*"'
 
-    tokens = {"ADD", "SUB", "MUL", "DIV", "ASSIGN",
-              "ADDASSIGN", "SUBASSIGN", "MULASSIGN", "DIVASSIGN",
-              "LPAREN", "RPAREN", "LBRACE", "RBRACE",
-              "LBRACKET", "RBRACKET", "DOTADD",
-              "DOTSUB", "DOTMUL", "DOTDIV",
-              "EQ", "NEQ", "LT", "LTE", "GT", "GTE",
-              "RANGE", "COMMA", "LINE_END", "TRANSPOSE",
-              "IF", "ELSE", "WHILE", "FOR", "BREAK", "CONTINUE",
-              "RETURN", "EYE", "ZEROS", "ONES", "PRINT", "ID",
-              "INTNUM", "FLOATNUM", "STRING"}
+    ID['for'] = "FOR"
+    ID['while'] = "WHILE"
+    ID['if'] = "IF"
+    ID['else'] = "ELSE"
+    ID['return'] = "RETURN"
+    ID['break'] = "BREAK"
+    ID['continue'] = "CONTINUE"
+    ID['eye'] = "EYE"
+    ID['zeros'] = "ZEROS"
+    ID['ones'] = "ONES"
+    ID['print'] = "PRINT"
+    _intnum = r'[+-]?\d+'
+    _exp = r'[eE][+-]?\d+'
+    _dot_num = rf'[+-]?\d*\.\d+({_exp})?'
+    _num_dot = rf'[+-]?\d+\.({_exp})?'
+    _int_exp = rf'{_intnum}{_exp}'
+    FLOATNUM = rf'{_dot_num}|{_num_dot}|{_int_exp}'
+    INTNUM = rf'{_intnum}'
+    STRING = r'"([^"\\\n]|\\")*"'
 
+    @_(r'\n') # type: ignore
+    def ignore_newline(self, t):
+        self.lineno += 1
 
-if __name__ == '__main__':
+    @_(FLOATNUM) # type: ignore
+    def FLOATNUM(self, t):
+        t.value = float(t.value)
+        return t
 
-    try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example_full.txt"
-        file = open(filename, "r")
-    except IOError:
-        print("Cannot open {0} file".format(filename))
-        sys.exit(0)
+    @_(r'[+-]?\d*') # type: ignore
+    def INTNUM(self, t):
+        t.value = int(t.value)
+        return t
 
-    text = file.read()
-    print(text)
-    lexer = Scanner()
-    line = 0
-    for tok in lexer.tokenize(text):
-        print(f'({line}): {tok.type}({tok.value})')
-        # print(tok)
-        if tok.type == 'LINE_END':
-            line += 1
+    @_(r'#.*') # type: ignore
+    def ignore_comment(self, t):
+        pass
