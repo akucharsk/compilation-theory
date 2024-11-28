@@ -32,18 +32,6 @@ def main() :
         lexer = Scanner()
         parser = Mparser()
 
-        parser.parse(lexer.tokenize(text))
+        test = parser.parse(lexer.tokenize(text))
         print(f"File {filename} parsed\n")
-    
-    # try:
-    #     filename = sys.argv[1] if len(sys.argv) > 1 else "example3.m"
-    #     file = open(filename, "r")
-    # except IOError:
-    #     print("Cannot open {0} file".format(filename))
-    #     sys.exit(0)
-
-    # text = file.read()
-    # lexer = Scanner()
-    # parser = Mparser()
-
-    # parser.parse(lexer.tokenize(text))
+        print(test,"\n")

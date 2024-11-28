@@ -33,5 +33,6 @@ def main() :
         parser = Mparser()
 
         ast = parser.parse(lexer.tokenize(text))
+        print(ast)
         ast.printTree()
 
