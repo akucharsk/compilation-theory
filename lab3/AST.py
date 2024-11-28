@@ -21,15 +21,48 @@ class ConditionalInstruction(Node):
     instructions: Any
     else_instruction: Any
 
-
-# EXPRESSIONS
+@dataclass
+class PrintInstruction(Node):
+    value: Any
 
 
 @dataclass
+class ReturnInstruction(Node):
+    value: Any
+
+
+@dataclass
+class BreakInstruction(Node):
+    pass
+
+
+@dataclass
+class ContinueInstruction(Node):
+    pass
+
+# EXPRESSIONS
+
+class IntNum(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class FloatNum(Node):
+
+    def __init__(self, value):
+        self.value = value
+
+
+class Variable(Node):
+    def __init__(self, name):
+        self.name = name
+
+
 class BinExpr(Node):
-    op: Any
-    left: Any
-    right: Any
+    def __init__(self, op, left, right):
+        self.op = op
+        self.left = left
+        self.right = right
 
 
 @dataclass

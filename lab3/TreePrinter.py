@@ -1,4 +1,4 @@
-import AST
+from lab3 import AST
 
 def addToClass(cls):
 
