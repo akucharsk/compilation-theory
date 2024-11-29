@@ -7,8 +7,8 @@ from get_file import get_file
 def main() :
     filenames = []
     filenames.append("control_transfer.m")
-    filenames.append("init.m")
-    filenames.append("opers.m")
+    # filenames.append("init.m")
+    # filenames.append("opers.m")
     print()
     for filename in filenames :
 
@@ -19,6 +19,10 @@ def main() :
         parser = Mparser()
 
         ast = parser.parse(lexer.tokenize(text))
-        ast.printTree()
+        # ast.printTree()
         typeChecker = TypeChecker()
         typeChecker.visit(ast)
+        
+        for error in typeChecker.errors:
+            print(error)
+        

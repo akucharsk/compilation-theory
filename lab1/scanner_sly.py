@@ -76,7 +76,8 @@ class Scanner(Lexer):
 
     @_(r'\n') # type: ignore
     def ignore_newline(self, t):
-        self.lineno += 1
+        self.lineno += t.value.count('\n')  # Dodaj liczbę nowych linii
+
 
     @_(FLOATNUM) # type: ignore
     def FLOATNUM(self, t):

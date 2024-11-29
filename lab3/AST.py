@@ -7,36 +7,50 @@ def addToClass(cls):
         return func
     return decorator
 
-class Node(object):
-    pass
+@dataclass
+class Node:
+    @property
+    def children(self):
+        return []
+
 
 # INSTRUCTIONS
 
 @dataclass
 class CompoundStatement(Node):
-    instructions: List[Node]
+    instructions: List[Node] = None
+    line: int = None
 
 @dataclass
 class ConditionalInstruction(Node):
     condition: Any
     instructions: Any
-    else_instruction: Any
+    else_instruction: Any = None
+    line: int = None
 
 @dataclass
 class PrintInstruction(Node):
     value: Any
+    line: int = None
+
 
 @dataclass
 class ReturnInstruction(Node):
     value: Any
+    line: int = None
+
 
 @dataclass
 class BreakInstruction(Node):
-    value: Any
+    value: Any = None
+    line: int = None
+
 
 @dataclass
 class ContinueInstruction(Node):
-     value: Any
+    value: Any = None
+    line: int = None
+
 
 
 # EXPRESSIONS
@@ -44,39 +58,55 @@ class ContinueInstruction(Node):
 @dataclass
 class IntNum(Node):
     value: int
+    line: int = None
+
 
 @dataclass
 class FloatNum(Node):
     value: float
+    line: int = None
+
 
 @dataclass
 class Variable(Node):
     name: str
+    line: int = None
+
 
 @dataclass
 class BinExpr(Node):
     op: str
     left: Node
     right: Node
+    line: int = None
+
 
 @dataclass
 class RelationExpr(Node):
     op: str
     left: Node
     right: Node
+    line: int = None
+
 
 @dataclass
 class UnaryExpr(Node):
     op: str
     value: Node
+    line: int = None
+
 
 @dataclass
 class Transpose(Node):
     value: Node
+    line: int = None
+
 
 @dataclass
 class String(Node):
     value: str
+    line: int = None
+
 
 
 # ASSIGNMENTS
@@ -86,6 +116,8 @@ class Assignment(Node):
     id: Any
     assign_type: str
     value: Any
+    line: int = None
+
 
 @dataclass
 class AssignIndex(Node):
@@ -93,6 +125,8 @@ class AssignIndex(Node):
     index: Any
     assign_type: str
     value: Any
+    line: int = None
+
 
 
 # LOOPS
@@ -102,11 +136,15 @@ class ForLoop(Node):
     id: Any
     range: Node
     instructions: Any
+    line: int = None
+
 
 @dataclass
 class WhileLoop(Node):
     condition: Any
     instructions: Any
+    line: int = None
+
 
 
 # ARRAYS AND RANGES
@@ -114,16 +152,22 @@ class WhileLoop(Node):
 @dataclass
 class Vector(Node):
     elements: List[Any]
+    line: int = None
+
 
 @dataclass
 class ArrayAccess(Node):
     id: Node
     indices: List[Node]
+    line: int = None
+
 
 @dataclass
 class Range(Node):
     start: Any
     end: Any
+    line: int = None
+
 
 
 # FUNCTIONS
@@ -132,6 +176,8 @@ class Range(Node):
 class MatrixFunction(Node):
     name: str
     params: List[Node]
+    line: int = None
+
 
 
 # ERROR
@@ -139,4 +185,5 @@ class MatrixFunction(Node):
 @dataclass
 class Error(Node):
     message: str
+    line: int = None
 
