@@ -1,4 +1,5 @@
 from sly import Lexer
+from tokens_names import *
 
 class Scanner(Lexer):
 
@@ -7,12 +8,12 @@ class Scanner(Lexer):
     ignore_newline = r'\n'
 
     tokens = {
-        "PLUS", "MINUS", "TIMES", "DIVIDE", "ASSIGN", "ADDASSIGN",
-        "SUBASSIGN", "MULASSIGN", "DIVASSIGN", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
-        "LBRACKET", "RBRACKET", "DOTADD", "DOTSUB", "DOTMUL", "DOTDIV",
-        "EQ", "NEQ", "LT", "LTE", "GT", "GTE", "RANGE", "COMMA", "LINE_END", "TRANSPOSE",
-        "FOR", "WHILE", "IF", "ELSE", "RETURN", "BREAK", "CONTINUE", "EYE", "ZEROS", "ONES", "PRINT",
-        "ID", "INTNUM", "FLOATNUM", "STRING"
+        PLUS, MINUS, TIMES, DIVIDE, ASSIGN, ADDASSIGN,
+        SUBASSIGN, MULASSIGN, DIVASSIGN, LPAREN, RPAREN, LBRACE, RBRACE,
+        LBRACKET, RBRACKET, DOTADD, DOTSUB, DOTMUL, DOTDIV,
+        EQ, NEQ, LT, LTE, GT, GTE, RANGE, COMMA, LINE_END, TRANSPOSE,
+        FOR, WHILE, IF, ELSE, RETURN, BREAK, CONTINUE, EYE, ZEROS, ONES, PRINT,
+        ID, INTNUM, FLOATNUM, STRING
     }
 
     EQ = r'=='
@@ -53,17 +54,17 @@ class Scanner(Lexer):
 
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
-    ID['for'] = "FOR"
-    ID['while'] = "WHILE"
-    ID['if'] = "IF"
-    ID['else'] = "ELSE"
-    ID['return'] = "RETURN"
-    ID['break'] = "BREAK"
-    ID['continue'] = "CONTINUE"
-    ID['eye'] = "EYE"
-    ID['zeros'] = "ZEROS"
-    ID['ones'] = "ONES"
-    ID['print'] = "PRINT"
+    ID['for'] = FOR
+    ID['while'] = WHILE
+    ID['if'] = IF
+    ID['else'] = ELSE
+    ID['return'] = RETURN
+    ID['break'] = BREAK
+    ID['continue'] = CONTINUE
+    ID['eye'] = EYE
+    ID['zeros'] = ZEROS
+    ID['ones'] = ONES
+    ID['print'] = PRINT
     _intnum = r'[+-]?\d+'
     _exp = r'[eE][+-]?\d+'
     _dot_num = rf'[+-]?\d*\.\d+({_exp})?'

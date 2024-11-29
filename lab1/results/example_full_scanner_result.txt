@@ -14,13 +14,11 @@ res1 = 60.500;
 res2 = 60.;
 res3 = .500;
 res4 = 60.52E2;
-str = "Hello world"; c = "ahoj przygodo"
+str = "Hello world";
 
 if (m==n) { 
     if (m >= n) 
         print res;
-        breakout of printer;
-
 }
 
 
@@ -123,27 +121,20 @@ Token(type='ID', value='str', lineno=17, index=541, end=544)
 Token(type='ASSIGN', value='=', lineno=17, index=545, end=546)
 Token(type='STRING', value='"Hello world"', lineno=17, index=547, end=560)
 Token(type='LINE_END', value=';', lineno=17, index=560, end=561)
-Token(type='ID', value='c', lineno=17, index=562, end=563)
-Token(type='ASSIGN', value='=', lineno=17, index=564, end=565)
-Token(type='STRING', value='"ahoj przygodo"', lineno=17, index=566, end=581)
-Token(type='IF', value='if', lineno=19, index=583, end=585)
-Token(type='LPAREN', value='(', lineno=19, index=586, end=587)
-Token(type='ID', value='m', lineno=19, index=587, end=588)
-Token(type='EQ', value='==', lineno=19, index=588, end=590)
-Token(type='ID', value='n', lineno=19, index=590, end=591)
-Token(type='RPAREN', value=')', lineno=19, index=591, end=592)
-Token(type='LBRACE', value='{', lineno=19, index=593, end=594)
-Token(type='IF', value='if', lineno=20, index=600, end=602)
-Token(type='LPAREN', value='(', lineno=20, index=603, end=604)
-Token(type='ID', value='m', lineno=20, index=604, end=605)
-Token(type='GTE', value='>=', lineno=20, index=606, end=608)
-Token(type='ID', value='n', lineno=20, index=609, end=610)
-Token(type='RPAREN', value=')', lineno=20, index=610, end=611)
-Token(type='PRINT', value='print', lineno=21, index=621, end=626)
-Token(type='ID', value='res', lineno=21, index=627, end=630)
-Token(type='LINE_END', value=';', lineno=21, index=630, end=631)
-Token(type='ID', value='breakout', lineno=22, index=640, end=648)
-Token(type='ID', value='of', lineno=22, index=649, end=651)
-Token(type='ID', value='printer', lineno=22, index=652, end=659)
-Token(type='LINE_END', value=';', lineno=22, index=659, end=660)
-Token(type='RBRACE', value='}', lineno=24, index=662, end=663)
+Token(type='IF', value='if', lineno=19, index=563, end=565)
+Token(type='LPAREN', value='(', lineno=19, index=566, end=567)
+Token(type='ID', value='m', lineno=19, index=567, end=568)
+Token(type='EQ', value='==', lineno=19, index=568, end=570)
+Token(type='ID', value='n', lineno=19, index=570, end=571)
+Token(type='RPAREN', value=')', lineno=19, index=571, end=572)
+Token(type='LBRACE', value='{', lineno=19, index=573, end=574)
+Token(type='IF', value='if', lineno=20, index=580, end=582)
+Token(type='LPAREN', value='(', lineno=20, index=583, end=584)
+Token(type='ID', value='m', lineno=20, index=584, end=585)
+Token(type='GTE', value='>=', lineno=20, index=586, end=588)
+Token(type='ID', value='n', lineno=20, index=589, end=590)
+Token(type='RPAREN', value=')', lineno=20, index=590, end=591)
+Token(type='PRINT', value='print', lineno=21, index=601, end=606)
+Token(type='ID', value='res', lineno=21, index=607, end=610)
+Token(type='LINE_END', value=';', lineno=21, index=610, end=611)
+Token(type='RBRACE', value='}', lineno=22, index=612, end=613)
