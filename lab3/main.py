@@ -1,6 +1,5 @@
 from lab1.scanner_sly import Scanner
 from lab2.parser_sly import Mparser
-from lab3.TreePrinter import TreePrinter
 from get_file import get_file
 
 def main() :
@@ -18,6 +17,5 @@ def main() :
         parser = Mparser()
 
         ast = parser.parse(lexer.tokenize(text))
-        # Wywołanie printTree dla każdego węzła w liście instrukcji
         ast.printTree()
 
