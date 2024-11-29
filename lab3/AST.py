@@ -117,7 +117,7 @@ class Vector(Node):
 
 @dataclass
 class ArrayAccess(Node):
-    array: Node
+    id: Node
     indices: List[Node]
 
 @dataclass

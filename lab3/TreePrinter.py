@@ -67,7 +67,7 @@ class TreePrinter:
     @addToClass(AST.ArrayAccess)
     def printTree(self, indent = 0) :
         print("|  " * indent + ARRAY_READ)
-        print("|  " * (indent + 1) + self.array)
+        print("|  " * (indent + 1) + self.id)
         for idx in self.indices :
             idx.printTree(indent + 2)
         
