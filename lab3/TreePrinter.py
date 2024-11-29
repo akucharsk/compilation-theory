@@ -63,6 +63,13 @@ class TreePrinter:
             idx.printTree(indent + 2)
         self.value.printTree(indent + 1)
         
+    
+    @addToClass(AST.ArrayAccess)
+    def printTree(self, indent = 0) :
+        print("|  " * indent + ARRAY_READ)
+        print("|  " * (indent + 1) + self.array)
+        for idx in self.indices :
+            idx.printTree(indent + 2)
         
     @addToClass(AST.Transpose)
     def printTree(self, indent=0):
@@ -129,6 +136,20 @@ class TreePrinter:
             else:
                 self.else_instruction.printTree(indent + 1)
 
+    @addToClass(AST.ContinueInstruction)
+    def printTree(self, indent = 0) :
+        print("|  " * indent + CONTINUE)
+    
+    @addToClass(AST.BreakInstruction)
+    def printTree(self, indent = 0) :
+        print("|  " * indent + BREAK)
+        
+    @addToClass(AST.ReturnInstruction)
+    def printTree(self, indent = 0) :
+        print("|  " * indent + RETURN)
+        
+        
+    
 
 
 

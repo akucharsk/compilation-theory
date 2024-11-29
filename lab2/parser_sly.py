@@ -54,10 +54,11 @@ class Mparser(Parser):
     @_('BREAK LINE_END', # type: ignore
     'CONTINUE LINE_END')
     def instruction(self, p):
-        if p[0] == 'BREAK':
-            return AST.BreakInstruction()
-        elif p[0] == 'CONTINUE':
-            return AST.ContinueInstruction()
+        val = p[0].upper()
+        if val == BREAK:
+            return AST.BreakInstruction(value = p[0])
+        elif val == CONTINUE:
+            return AST.ContinueInstruction(value = p[0])
 
     @_('LBRACE instructions RBRACE') # type: ignore
     def instruction(self, p):
@@ -90,6 +91,10 @@ class Mparser(Parser):
     @_('ID LBRACKET elements RBRACKET assign expr') # type: ignore
     def assignment(self, p):
         return AST.AssignIndex(id=p.ID, index=p.elements, assign_type=p.assign, value=p.expr)
+
+    @_('ID LBRACKET elements RBRACKET') # type: ignore
+    def expr(self, p):
+        return AST.ArrayAccess(p[0], p[2])
 
     @_('ASSIGN', # type: ignore
     'ADDASSIGN',

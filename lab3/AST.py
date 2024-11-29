@@ -32,11 +32,11 @@ class ReturnInstruction(Node):
 
 @dataclass
 class BreakInstruction(Node):
-    pass
+    value: Any
 
 @dataclass
 class ContinueInstruction(Node):
-    pass
+     value: Any
 
 
 # EXPRESSIONS
