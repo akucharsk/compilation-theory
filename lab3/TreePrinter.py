@@ -33,7 +33,7 @@ class TreePrinter:
     @addToClass(AST.Assignment)
     def printTree(self, indent=0):
         print(indent_string(indent) + "=")
-        print("|  " * (indent + 1) + self.id)
+        print(indent_string(indent + 1) + self.id)
         self.value.printTree(indent + 1)
 
     @addToClass(AST.CompoundStatement)
@@ -60,8 +60,8 @@ class TreePrinter:
     @addToClass(AST.AssignIndex)
     def printTree(self, indent=0):
         print(indent_string(indent) + "=")
-        print("|  " * (indent + 1) + INDEX)
-        print("|  " * (indent + 2) + self.id)
+        print(indent_string(indent + 1) + INDEX)
+        print(indent_string(indent + 2) + self.id)
         for idx in self.index:
             idx.printTree(indent + 2)
         self.value.printTree(indent + 1)
@@ -70,7 +70,7 @@ class TreePrinter:
     @addToClass(AST.ArrayAccess)
     def printTree(self, indent = 0) :
         print(indent_string(indent) + ARRAY_READ)
-        print("|  " * (indent + 1) + self.id)
+        print(indent_string(indent + 1) + self.id)
         for idx in self.indices :
             idx.printTree(indent + 2)
         
@@ -83,7 +83,7 @@ class TreePrinter:
     @addToClass(AST.ForLoop)
     def printTree(self, indent=0):
         print(indent_string(indent) + FOR)
-        print("|  " * (indent + 1) + self.id)
+        print(indent_string(indent + 1) + self.id)
         self.range.printTree(indent + 1)
         for instruction in self.instructions:
             instruction.printTree(indent + 1)
@@ -142,15 +142,3 @@ class TreePrinter:
     @addToClass(AST.ReturnInstruction)
     def printTree(self, indent = 0) :
         print(indent_string(indent) + RETURN)
-        
-        
-    
-
-
-
-
-
-
-
-
-
