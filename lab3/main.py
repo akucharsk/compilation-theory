@@ -1,16 +1,13 @@
-import sys
 from lab1.scanner_sly import Scanner
 from lab2.parser_sly import Mparser
+from lab3.TreePrinter import TreePrinter
 from get_file import get_file
 
-
 def main() :
-
     filenames = []
     filenames.append("example1.m")
     filenames.append("example2.m")
     filenames.append("example3.m")
-    filenames.append("additional_test.m")
     print()
     for filename in filenames :
 
@@ -20,6 +17,7 @@ def main() :
         lexer = Scanner()
         parser = Mparser()
 
-        test = parser.parse(lexer.tokenize(text))
-        print(f"File {filename} parsed\n")
-        print(test,"\n")
+        ast = parser.parse(lexer.tokenize(text))
+        # Wywołanie printTree dla każdego węzła w liście instrukcji
+        ast.printTree()
+

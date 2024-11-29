@@ -1,67 +1,142 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 
+def addToClass(cls):
+    def decorator(func):
+        setattr(cls, func.__name__, func)
+        return func
+    return decorator
 
 class Node(object):
     pass
 
+# INSTRUCTIONS
+
+@dataclass
+class CompoundStatement(Node):
+    instructions: List[Node]
+
+@dataclass
+class ConditionalInstruction(Node):
+    condition: Any
+    instructions: Any
+    else_instruction: Any
+
+@dataclass
+class PrintInstruction(Node):
+    value: Any
+
+@dataclass
+class ReturnInstruction(Node):
+    value: Any
+
+@dataclass
+class BreakInstruction(Node):
+    pass
+
+@dataclass
+class ContinueInstruction(Node):
+    pass
+
+
+# EXPRESSIONS
 
 @dataclass
 class IntNum(Node):
-    value: Any
-
+    value: int
 
 @dataclass
 class FloatNum(Node):
-    value: Any
-
-
-@dataclass
-class String(Node):
-    value: Any
-
+    value: float
 
 @dataclass
 class Variable(Node):
-    name: Any
-
+    name: str
 
 @dataclass
 class BinExpr(Node):
-    op: Any
-    left: Any
-    right: Any
+    op: str
+    left: Node
+    right: Node
 
+@dataclass
+class RelationExpr(Node):
+    op: str
+    left: Node
+    right: Node
+
+@dataclass
+class UnaryExpr(Node):
+    op: str
+    value: Node
+
+@dataclass
+class Transpose(Node):
+    value: Node
+
+@dataclass
+class String(Node):
+    value: str
+
+
+# ASSIGNMENTS
 
 @dataclass
 class Assignment(Node):
     id: Any
-    assign_type: Any
+    assign_type: str
     value: Any
-
 
 @dataclass
 class AssignIndex(Node):
     id: Any
     index: Any
-    assign_type: Any
+    assign_type: str
     value: Any
 
 
-@dataclass
-class MatrixFunction(Node):
-    name: Any
-    params: Any
-
+# LOOPS
 
 @dataclass
 class ForLoop(Node):
-    range_start: Any
-    range_end: Any
+    id: Any
+    range: Node
+    instructions: Any
+
+@dataclass
+class WhileLoop(Node):
+    condition: Any
     instructions: Any
 
 
+# ARRAYS AND RANGES
+
+@dataclass
+class Vector(Node):
+    elements: List[Any]
+
+@dataclass
+class ArrayAccess(Node):
+    array: Node
+    indices: List[Node]
+
+@dataclass
+class Range(Node):
+    start: Any
+    end: Any
+
+
+# FUNCTIONS
+
+@dataclass
+class MatrixFunction(Node):
+    name: str
+    params: List[Node]
+
+
+# ERROR
+
+@dataclass
 class Error(Node):
-    def __init__(self):
-        pass
-      
+    message: str
+
