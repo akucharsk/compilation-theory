@@ -6,6 +6,6 @@ from lab4.main import main as lab4_main
 if __name__ == "__main__":
     # lab1_main()
     # lab2_main()
-    # lab3_main()
-    lab4_main()
+    lab3_main()
+    # lab4_main()
     
