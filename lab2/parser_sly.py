@@ -13,14 +13,14 @@ class Mparser(Parser):
     debugfile = debug_path
 
     precedence = (
-        ("nonassoc", 'IFX'),
-        ("nonassoc", 'ELSE'),
-        ("nonassoc", 'EQ', 'NEQ'),
-        ("nonassoc", 'LT', 'GT', 'LTE', 'GTE'),
-        ("left", 'PLUS', 'MINUS', 'DOTADD', 'DOTSUB'),
-        ("left", 'TIMES', 'DIVIDE', 'DOTMUL', 'DOTDIV'),
-        ("right", 'UMINUS'),
-        ("left", 'TRANSPOSE'),
+        ("nonassoc", IFX),
+        ("nonassoc", ELSE),
+        ("nonassoc", EQ, NEQ),
+        ("nonassoc", LT, GT, LTE, GTE),
+        ("left", PLUS, MINUS, DOTADD, DOTSUB),
+        ("left", TIMES, DIVIDE, DOTMUL, DOTDIV),
+        ("right", UMINUS),
+        ("left", TRANSPOSE),
     )
 
     def __init__(self):
