@@ -13,14 +13,14 @@ class Mparser(Parser):
     debugfile = debug_path
 
     precedence = (
-        ("nonassoc", 'IFX'),
-        ("nonassoc", 'ELSE'),
-        ("nonassoc", 'EQ', 'NEQ'),
-        ("nonassoc", 'LT', 'GT', 'LTE', 'GTE'),
-        ("left", 'PLUS', 'MINUS', 'DOTADD', 'DOTSUB'),
-        ("left", 'TIMES', 'DIVIDE', 'DOTMUL', 'DOTDIV'),
-        ("right", 'UMINUS'),
-        ("left", 'TRANSPOSE'),
+        ("nonassoc", IFX),
+        ("nonassoc", ELSE),
+        ("nonassoc", EQ, NEQ),
+        ("nonassoc", LT, GT, LTE, GTE),
+        ("left", PLUS, MINUS, DOTADD, DOTSUB),
+        ("left", TIMES, DIVIDE, DOTMUL, DOTDIV),
+        ("right", UMINUS),
+        ("left", TRANSPOSE),
     )
 
     def __init__(self):
@@ -29,7 +29,7 @@ class Mparser(Parser):
 
     @_('instructions') # type: ignore
     def instructions_opt(self, p):
-        return AST.CompoundStatement(instructions=p.instructions)
+        return AST.CompoundStatement(instructions=p.instructions, line = p.lineno)
 
     @_('') # type: ignore
     def instructions_opt(self, p):
@@ -45,19 +45,20 @@ class Mparser(Parser):
 
     @_('PRINT elements LINE_END') # type: ignore
     def instruction(self, p):
-        return AST.PrintInstruction(value=p.elements)
+        return AST.PrintInstruction(value=p.elements, line = p.lineno)
 
     @_('RETURN expr LINE_END') # type: ignore
     def instruction(self, p):
-        return AST.ReturnInstruction(value=p.expr)
+        return AST.ReturnInstruction(value=p.expr, line = p.lineno)
 
     @_('BREAK LINE_END', # type: ignore
     'CONTINUE LINE_END')
     def instruction(self, p):
-        if p[0] == 'BREAK':
-            return AST.BreakInstruction()
-        elif p[0] == 'CONTINUE':
-            return AST.ContinueInstruction()
+        val = p[0].upper()
+        if val == BREAK:
+            return AST.BreakInstruction(value = p[0], line = p.lineno)
+        elif val == CONTINUE:
+            return AST.ContinueInstruction(value = p[0], line = p.lineno)
 
     @_('LBRACE instructions RBRACE') # type: ignore
     def instruction(self, p):
@@ -65,19 +66,19 @@ class Mparser(Parser):
     
     @_('IF LPAREN expr RPAREN instruction %prec IFX') # type: ignore
     def instruction(self, p):
-        return AST.ConditionalInstruction(condition=p.expr, instructions=p.instruction, else_instruction=None)
+        return AST.ConditionalInstruction(condition=p.expr, instructions=p.instruction, else_instruction=None, line = p.lineno)
 
     @_('IF LPAREN expr RPAREN instruction ELSE instruction') # type: ignore
     def instruction(self, p):
-        return AST.ConditionalInstruction(condition=p.expr, instructions=p.instruction0, else_instruction=p.instruction1)
+        return AST.ConditionalInstruction(condition=p.expr, instructions=p.instruction0, else_instruction=p.instruction1, line = p.lineno)
 
     @_('WHILE LPAREN expr RPAREN instruction') # type: ignore
     def instruction(self, p):
-        return AST.WhileLoop(condition=p.expr, instructions=p.instruction)
+        return AST.WhileLoop(condition=p.expr, instructions=p.instruction, line = p.lineno)
 
     @_('FOR ID ASSIGN expr RANGE expr instruction') # type: ignore
     def instruction(self, p):
-        return AST.ForLoop(id=p.ID, range=AST.Range(start=p.expr0, end=p.expr1), instructions=p.instruction)
+        return AST.ForLoop(id=p.ID, range=AST.Range(start=p.expr0, end=p.expr1), instructions=p.instruction, line = p.lineno)
 
     @_('assignment LINE_END') # type: ignore
     def instruction(self, p):
@@ -85,11 +86,15 @@ class Mparser(Parser):
 
     @_('ID assign expr') # type: ignore
     def assignment(self, p):
-        return AST.Assignment(id=p.ID, assign_type=p.assign, value=p.expr)
+        return AST.Assignment(id=p.ID, assign_type=p.assign, value=p.expr, line = p.lineno)
 
     @_('ID LBRACKET elements RBRACKET assign expr') # type: ignore
     def assignment(self, p):
-        return AST.AssignIndex(id=p.ID, index=p.elements, assign_type=p.assign, value=p.expr)
+        return AST.AssignIndex(id=p.ID, index=p.elements, assign_type=p.assign, value=p.expr, line = p.lineno)
+
+    @_('ID LBRACKET elements RBRACKET') # type: ignore
+    def expr(self, p):
+        return AST.ArrayAccess(p[0], p[2], line = p.lineno)
 
     @_('ASSIGN', # type: ignore
     'ADDASSIGN',
@@ -106,21 +111,21 @@ class Mparser(Parser):
        'expr LTE expr',
        'expr GTE expr')
     def expr(self, p):
-        return AST.RelationExpr(op=p[1], left=p.expr0, right=p.expr1)
+        return AST.RelationExpr(op=p[1], left=p.expr0, right=p.expr1, line = p.lineno)
 
     @_('expr PLUS expr', # type: ignore
        'expr MINUS expr',
        'expr TIMES expr',
        'expr DIVIDE expr')
     def expr(self, p):
-        return AST.BinExpr(op=p[1], left=p.expr0, right=p.expr1)
+        return AST.BinExpr(op=p[1], left=p.expr0, right=p.expr1, line = p.lineno)
 
     @_('expr DOTADD expr', # type: ignore
        'expr DOTSUB expr',
        'expr DOTMUL expr',
        'expr DOTDIV expr')
     def expr(self, p):
-        return AST.BinExpr(op=p[1], left=p.expr0, right=p.expr1)
+        return AST.BinExpr(op=p[1], left=p.expr0, right=p.expr1, line = p.lineno)
 
     @_('LPAREN expr RPAREN') # type: ignore
     def expr(self, p):
@@ -128,29 +133,29 @@ class Mparser(Parser):
 
     @_('INTNUM') # type: ignore
     def expr(self, p):
-        return AST.IntNum(value=p.INTNUM)
+        return AST.IntNum(value=p.INTNUM, line = p.lineno)
 
     @_('FLOATNUM') # type: ignore
     def expr(self, p):
-        return AST.FloatNum(value=p.FLOATNUM)
+        return AST.FloatNum(value=p.FLOATNUM, line = p.lineno)
 
     @_('STRING') # type: ignore
     def expr(self, p):
-        return AST.String(value=p.STRING)
+        return AST.String(value=p.STRING, line = p.lineno)
 
     @_('ID') # type: ignore
     def expr(self, p):
-        return AST.Variable(name=p.ID)
+        return AST.Variable(name=p.ID, line = p.lineno)
 
     @_('EYE LPAREN elements RPAREN', # type: ignore
        'ZEROS LPAREN elements RPAREN',
        'ONES LPAREN elements RPAREN')
     def expr(self, p):
-        return AST.MatrixFunction(name=p[0], params=p.elements)
+        return AST.MatrixFunction(name=p[0], params=p.elements, line = p.lineno)
 
     @_('MINUS expr %prec UMINUS') # type: ignore
     def expr(self, p):
-        return AST.UnaryExpr(op='-', value=p.expr)
+        return AST.UnaryExpr(op='-', value=p.expr, line = p.lineno)
 
     @_('vector') # type: ignore
     def expr(self, p):
@@ -158,7 +163,7 @@ class Mparser(Parser):
 
     @_('LBRACKET elements RBRACKET') # type: ignore
     def vector(self, p):
-        return AST.Vector(elements=p.elements)
+        return AST.Vector(elements=p.elements, line = p.lineno)
 
     @_('expr COMMA elements') # type: ignore
     def elements(self, p):
@@ -170,4 +175,4 @@ class Mparser(Parser):
 
     @_('expr TRANSPOSE') # type: ignore
     def expr(self, p):
-        return AST.Transpose(value=p.expr)
+        return AST.Transpose(value=p.expr, line = p.lineno)
