@@ -1,7 +1,13 @@
+class Symbol:
+    def __init__(self, name):
+        self.name = name
+
+
 class VariableSymbol(Symbol):
-    def __init__(self, name, type):
+    def __init__(self, name, type, size = None):
         super().__init__(name)
         self.type = type
+        self.size = size
 
 
 class SymbolTable:
