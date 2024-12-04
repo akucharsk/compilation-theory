@@ -18,6 +18,5 @@ def main() :
         parser = Mparser()
 
         ast = parser.parse(lexer.tokenize(text))
-        # Wywołanie printTree dla każdego węzła w liście instrukcji
         ast.printTree()
 
