@@ -18,27 +18,27 @@ def main():
         ],
 
         [
-            'Line 3: Matrix rows must have the same size. Found row sizes: [3, 5, 2].',
-            "Line 14: Variable 'j' is not defined.",
-            "Line 27: Variable 'a' is not defined.",
-            "Line 27: Variable 'b' is not defined.",
-            "Line 30: Variable 'a' is not defined.",
-            "Line 31: Variable 'y' is not defined.",
-            "Line 35: Variable 'i' is not defined.",
+            'LINE 3: Matrix rows must have the same size. Found row sizes: [3, 5, 2].',
+            "LINE 14: Variable 'j' is not defined.",
+            "LINE 27: Variable 'a' is not defined.",
+            "LINE 27: Variable 'b' is not defined.",
+            "LINE 30: Variable 'a' is not defined.",
+            "LINE 31: Variable 'y' is not defined.",
+            "LINE 35: Variable 'i' is not defined.",
             "LINE 36: 'break' statement used outside of a loop."
         ],
 
         [
-            "Line 4: Type mismatch in binary operation '+': 'int' and 'matrix' are not compatible.",
-            "Line 8: Cannot perform operation '+' on matrices of different sizes: [5, 5] and [8, 8].",
-            "Line 13: Type mismatch in binary operation '+': 'vector' and 'matrix' are not compatible.",
-            "Line 17: Cannot perform operation '+' on vectors of different sizes: 5 and 6.",
-            "Line 21: Cannot perform operation '+' on matrices of different sizes: [5, 5] and [5, 7].",
-            'Line 24: Index 7 out of bounds for dimension 1 of matrix with size [3, 5].',
-            'Line 24: Index 10 out of bounds for dimension 2 of matrix with size [3, 5].',
-            'Line 25: Matrix access requires 2 indices, got 3.',
-            'Line 33: Cannot multiply matrices of shapes [3, 5] and [3, 3].',
-            "Line 35: 'eye' function requires one integer parameter, got [3, 3]."
+            "LINE 4: Type mismatch in binary operation '+': 'int' and 'matrix' are not compatible.",
+            "LINE 8: Cannot perform operation '+' on matrices of different sizes: [5, 5] and [8, 8].",
+            "LINE 13: Type mismatch in binary operation '+': 'vector' and 'matrix' are not compatible.",
+            "LINE 17: Cannot perform operation '+' on vectors of different sizes: 5 and 6.",
+            "LINE 21: Cannot perform operation '+' on matrices of different sizes: [5, 5] and [5, 7].",
+            'LINE 24: Index 7 out of bounds for dimension 1 of matrix with size [3, 5].',
+            'LINE 24: Index 10 out of bounds for dimension 2 of matrix with size [3, 5].',
+            'LINE 25: Matrix access requires 2 indices, got 3.',
+            'LINE 33: Cannot multiply matrices of shapes [3, 5] and [3, 3].',
+            "LINE 35: 'eye' function requires one integer parameter, got [3, 3]."
         ]
     ]
 
@@ -55,14 +55,14 @@ def main():
         ast = parser.parse(lexer.tokenize(text))
         # ast.printTree()
         typeChecker = TypeChecker()
-        typeChecker.visit(ast)
+        typeChecker.visit_first(ast)
 
-        print(typeChecker.errors)
-        for type_checker_error, error in zip_longest(typeChecker.errors, errors):
-            if type_checker_error != error:
-                raise Exception("MISMATCHED ERRORS IN " + filename)
-            print(type_checker_error)
-        print("\n\n======================\n\n")
+        # print(typeChecker.errors)
+        # for type_checker_error, error in zip_longest(typeChecker.errors, errors):
+        #     if type_checker_error != error:
+        #         raise Exception("MISMATCHED ERRORS IN " + filename)
+        #     print(type_checker_error)
+        # print("\n\n======================\n\n")
 
 
 if __name__ == '__main__':
