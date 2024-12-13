@@ -6,10 +6,10 @@ from lab3.TreePrinter import TreePrinter
 from lab4.TypeChecker import TypeChecker
 from get_file import get_file
 from itertools import zip_longest
-
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def main():
-    files = os.listdir('data')
+    files = os.listdir(os.path.join(SCRIPT_PATH, 'data'))
     files.sort()
     errors = [
         [
