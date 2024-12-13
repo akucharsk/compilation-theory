@@ -6,23 +6,21 @@ from collections import defaultdict
 class NodeVisitor(object):
 
     def __init__(self):
-        self.errors = defaultdict(list)
+        self.last_line = 0
 
     def report_error(self, message, line):
-
-        self.errors[line].append(message)
+        if self.last_line == 0 :
+            print_color("ERRORS:")
+        line_str = f"    LINE {line}: "
+        plural = 0
+        if line != self.last_line :
+            print_color(line_str, end = "")
+        else : plural = 1
+        print_color(" "*plural*len(line_str) + message, color = "f54d30")
+        self.last_line = line
         
     def visit_first(self, node) :
         self.visit(node)
-        if len(self.errors) > 0 :
-            print_color("ERRORS:")
-            for line in self.errors :
-                line_str = f"    LINE {line}: "
-                print_color(line_str, end = "")
-                plural = 0
-                for error_message in self.errors[line] :
-                    print_color(" "*plural*len(line_str) + error_message, color = "f54d30")
-                    plural = 1
     
     def visit(self, node):
         method = 'visit_' + node.__class__.__name__
