@@ -23,3 +23,13 @@ z = x + y;
 x = ones(3,5);
 z = x[7,10];
 v = x[2,3,4];
+
+x = zeros(6, 7);
+y = ones(7, 5);
+z = x * y;
+
+x = zeros(3, 5);
+y = eye(3);
+z = x * y;
+
+a = eye(3, 3);
