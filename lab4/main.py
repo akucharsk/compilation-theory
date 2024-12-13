@@ -36,7 +36,9 @@ def main():
             "Line 21: Cannot perform operation '+' on matrices of different sizes: [5, 5] and [5, 7].",
             'Line 24: Index 7 out of bounds for dimension 1 of matrix with size [3, 5].',
             'Line 24: Index 10 out of bounds for dimension 2 of matrix with size [3, 5].',
-            'Line 25: Matrix access requires 2 indices, got 3.'
+            'Line 25: Matrix access requires 2 indices, got 3.',
+            'Line 33: Cannot multiply matrices of shapes [3, 5] and [3, 3].',
+            "Line 35: 'eye' function requires one integer parameter, got [3, 3]."
         ]
     ]
 
