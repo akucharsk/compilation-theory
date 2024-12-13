@@ -172,7 +172,12 @@ class TypeChecker(NodeVisitor):
             left_size = self.get_variable_size(node.left)
             right_size = self.get_variable_size(node.right)
 
-            if left_size != right_size:
+            if node.op == '*' and left_size[1] != right_size[0]:
+                self.report_error(f"Line {getattr(node, 'line', 'unknown')}: "
+                                  f"Cannot multiply matrices of shapes {left_size} and {right_size}.")
+                return 'unknown'
+
+            if node.op != "*" and left_size != right_size:
                 self.report_error(
                     f"Line {getattr(node, 'line', 'unknown')}: Cannot perform operation '{node.op}' on matrices of different sizes: "
                     f"{left_size} and {right_size}.")
