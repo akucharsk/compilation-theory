@@ -228,7 +228,6 @@ class TypeChecker(NodeVisitor):
         return 'string'
 
     def visit_Assignment(self, node):
-
         value_type = self.visit(node.value)
 
         # Get the variable from the symbol table

@@ -128,13 +128,20 @@ class AssignIndex(Node):
     line: int = None
 
 
-
 # LOOPS
+
+
+@dataclass
+class Range(Node):
+    start: Any
+    end: Any
+    line: int = None
+
 
 @dataclass
 class ForLoop(Node):
     id: Any
-    range: Node
+    range: Range
     instructions: Any
     line: int = None
 
@@ -160,14 +167,6 @@ class ArrayAccess(Node):
     id: Node
     indices: List[Node]
     line: int = None
-
-
-@dataclass
-class Range(Node):
-    start: Any
-    end: Any
-    line: int = None
-
 
 
 # FUNCTIONS
