@@ -1,3 +1,8 @@
+from queue import LifoQueue
+
+
+class NoSuchVariableException(Exception):
+    pass
 
 
 class Memory:
@@ -19,21 +24,26 @@ class Memory:
 class MemoryStack:
                                                                              
     def __init__(self, memory=None):  # initialize memory stack with memory <memory>
-        self.stack = {}
+        self.stack = [] if memory is None else [memory]
 
     def get(self, name):             # gets from memory stack current value of variable <name>
-        pass
+        for memory in self.stack[::-1]:
+            if memory.has_key(name):
+                return memory.get(name)
+        raise NoSuchVariableException(f"No variable named {name}")
 
     def insert(self, name, value): # inserts into memory stack variable <name> with value <value>
-        pass
+        self.stack[-1].put(name, value)
 
     def set(self, name, value): # sets variable <name> to value <value>
-        pass
+        for memory in self.stack[::-1]:
+            if memory.has_key(name):
+                memory.put(name, value)
 
     def push(self, memory): # pushes memory <memory> onto the stack
-        pass
+        self.stack.append(memory)
 
     def pop(self):          # pops the top memory from the stack
-        pass
+        return self.stack.pop()
 
 

@@ -161,8 +161,9 @@ class TypeChecker(NodeVisitor):
         left_type = self.visit(node.left)
 
         right_type = self.visit(node.right)
-
-        if left_type != right_type:
+        if {left_type, right_type} == {"string", "int"} and node.op == "*":
+            "ok"
+        elif left_type != right_type and {left_type, right_type} != {"int", "float"}:
             self.report_error(
                 f"Type mismatch in binary operation '{node.op}': "
                 f"'{left_type}' and '{right_type}' are not compatible.", getattr(node, 'line', 'unknown'))
@@ -216,8 +217,8 @@ class TypeChecker(NodeVisitor):
         if node.op not in ['-', '!']:
             self.report_error(f"Unsupported unary operator '{node.op}'.", node.line)
 
-        if node.op == '-' and value_type not in ['int', 'float']:
-            self.report_error(f"Unary '-' operator requires 'int' or 'float', got '{value_type}'.", node.line)
+        if node.op == '-' and value_type not in ['int', 'float', 'matrix', 'vector']:
+            self.report_error(f"LINE {node.line}: Unary '-' operator requires 'int' or 'float', got '{value_type}'.")
         elif node.op == '!' and value_type != 'bool':
             self.report_error(f"Unary '!' operator requires 'bool', got '{value_type}'.", node.line)
 
@@ -237,7 +238,6 @@ class TypeChecker(NodeVisitor):
         return 'string'
 
     def visit_Assignment(self, node):
-
         value_type = self.visit(node.value)
 
         # Get the variable from the symbol table
@@ -276,23 +276,15 @@ class TypeChecker(NodeVisitor):
             self.report_error(f"Variable '{node.id}' is not indexable (type: '{id_symbol.type}').", node.line)
             return
 
-        index_type = self.visit(node.index)
-        if index_type != 'int':
-            self.report_error(f"Index must be of type 'int', got '{index_type}'.", node.line)
+        index_type = [self.visit(node.index)] if not isinstance(node.index, list) else [self.visit(idx) for idx in node.index]
+        if any(map(lambda t: t != "int", index_type)):
+            self.report_error(f"LINE {node.line}: Index must be of type 'int', got '{index_type}'.")
 
         value_type = self.visit(node.value)
 
         if node.assign_type not in ['=', '+=', '-=', '*=', '/=']:
             self.report_error(f"Unsupported assignment operator '{node.assign_type}'.", node.line)
             return
-
-        element_type = id_symbol.element_type if hasattr(id_symbol, 'element_type') else id_symbol.type
-        if node.assign_type == '=' and element_type != value_type:
-            self.report_error(f"Type mismatch in indexed assignment: "
-                              f"cannot assign '{value_type}' to '{element_type}' in '{node.id}'.", node.line)
-        elif node.assign_type != '=' and element_type != value_type:
-            self.report_error(f"Type mismatch in compound indexed assignment '{node.assign_type}': "
-                              f"'{element_type}' and '{value_type}' are not compatible.", node.line)
 
     def visit_ForLoop(self, node):
         self.for_count += 1
