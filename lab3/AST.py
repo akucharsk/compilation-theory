@@ -52,7 +52,6 @@ class ContinueInstruction(Node):
     line: int = None
 
 
-
 # EXPRESSIONS
 
 @dataclass
@@ -130,7 +129,6 @@ class AssignIndex(Node):
 
 # LOOPS
 
-
 @dataclass
 class Range(Node):
     start: Any
@@ -153,17 +151,16 @@ class WhileLoop(Node):
     line: int = None
 
 
-
-# ARRAYS AND RANGES
+# MATRICES AND RANGES
 
 @dataclass
-class Vector(Node):
+class Matrix(Node):
     elements: List[Any]
     line: int = None
 
 
 @dataclass
-class ArrayAccess(Node):
+class MatrixAccess(Node):
     id: Node
     indices: List[Node]
     line: int = None
@@ -176,7 +173,6 @@ class MatrixFunction(Node):
     name: str
     params: List[Node]
     line: int = None
-
 
 
 # ERROR

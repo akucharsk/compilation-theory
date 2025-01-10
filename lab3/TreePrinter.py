@@ -51,9 +51,9 @@ class TreePrinter:
         for param in self.params:
             param.printTree(indent + 1)
             
-    @addToClass(AST.Vector)
+    @addToClass(AST.Matrix)
     def printTree(self, indent=0):
-        print(indent_string(indent) + VECTOR)
+        print(indent_string(indent) + MATRIX)
         for element in self.elements:
             element.printTree(indent + 1)
 
@@ -65,11 +65,11 @@ class TreePrinter:
         for idx in self.index:
             idx.printTree(indent + 2)
         self.value.printTree(indent + 1)
-        
+
     
-    @addToClass(AST.ArrayAccess)
+    @addToClass(AST.MatrixAccess)
     def printTree(self, indent = 0) :
-        print(indent_string(indent) + ARRAY_READ)
+        print(indent_string(indent) + MATRIX_READ)
         print(indent_string(indent + 1) + self.id)
         for idx in self.indices :
             idx.printTree(indent + 2)
@@ -77,6 +77,11 @@ class TreePrinter:
     @addToClass(AST.Transpose)
     def printTree(self, indent=0):
         print(indent_string(indent) + TRANSPOSE)
+        self.value.printTree(indent + 1)
+
+    @addToClass(AST.UnaryExpr)
+    def printTree(self, indent=0):
+        print(indent_string(indent) + UMINUS)
         self.value.printTree(indent + 1)
 
 
