@@ -28,6 +28,8 @@ def main():
     typeChecker = TypeChecker()
     typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)
 
+    if len(typeChecker.errors) > 0:
+        raise Exception(typeChecker.errors)
     interpreter = Interpreter()
     interpreter.visit(ast)
 
