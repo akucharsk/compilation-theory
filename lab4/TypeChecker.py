@@ -1,14 +1,27 @@
-import random
-
 from lab3 import AST
 from lab4.SymbolTable import SymbolTable, VariableSymbol
-
+from printing import print_color
+from collections import defaultdict
 
 class NodeVisitor(object):
 
     def __init__(self):
-        self.errors = []
+        self.last_line = 0
 
+    def report_error(self, message, line):
+        if self.last_line == 0 :
+            print_color("ERRORS:")
+        line_str = f"    LINE {line}: "
+        plural = 0
+        if line != self.last_line :
+            print_color(line_str, end = "")
+        else : plural = 1
+        print_color(" "*plural*len(line_str) + message, color = "f54d30")
+        self.last_line = line
+        
+    def visit_first(self, node) :
+        self.visit(node)
+    
     def visit(self, node):
         method = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method, self.generic_visit)
@@ -39,28 +52,25 @@ class TypeChecker(NodeVisitor):
         self.if_count = 0
         self.else_count = 0
 
+
         self.symbol_table = SymbolTable()
-
-    def report_error(self, message):
-        print(f"ERROR IN {message}")
-        self.errors.append(message)
-
+    
     def visit(self, node):
         if node is None:
-            print("Visited: None")
+            # print("Visited: None")
             return
-        if not isinstance(node, list):
-            print(f"Visiting node: {type(node).__name__}, line: {getattr(node, 'line', 'unknown')}")
+        # if not isinstance(node, list):
+        #     print(f"Visiting node: {type(node).__name__}, line: {getattr(node, 'line', 'unknown')}")
 
         try:
             return super().visit(node)
         except Exception as e:
             line = getattr(node, 'line', 'unknown')
-            self.report_error(f"LINE {line}: {str(e)}")
+            self.report_error(f"{str(e)}", line)
 
     def visit_CompoundStatement(self, node):
         if not node.instructions:
-            self.report_error(f"LINE {node.line}: Empty compound statement.")
+            self.report_error(f"Empty compound statement.", node.line)
             return
         for instruction in node.instructions:
             self.visit(instruction)
@@ -74,7 +84,7 @@ class TypeChecker(NodeVisitor):
         if node.instructions:
             self.visit(node.instructions)
         else:
-            self.report_error(f"LINE {node.line}: Missing instructions in 'if' block.")
+            self.report_error(f"Missing instructions in 'if' block.", node.line)
 
         self.symbol_table = scope.getParentScope()
         if node.else_instruction:
@@ -87,7 +97,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_PrintInstruction(self, node):
         if node.value is None:
-            self.report_error(f"LINE {node.line}: Missing value in 'print' instruction.")
+            self.report_error(f"Missing value in 'print' instruction.", node.line)
         else:
             self.visit(node.value)
 
@@ -95,15 +105,15 @@ class TypeChecker(NodeVisitor):
         if node.value is not None:
             self.visit(node.value)
         else:
-            self.report_error(f"LINE {node.line}: 'return' statement with no value.")
+            self.report_error(f"'return' statement with no value.", node.line)
 
     def visit_BreakInstruction(self, node):
         if self.in_loop == 0:
-            self.report_error(f"LINE {node.line}: 'break' statement used outside of a loop.")
+            self.report_error(f"'break' statement used outside of a loop.", node.line)
 
     def visit_ContinueInstruction(self, node):
         if self.in_loop == 0:
-            self.report_error(f"LINE {node.line}: 'continue' statement used outside of a loop.")
+            self.report_error(f"'continue' statement used outside of a loop.", node.line)
 
     def visit_IntNum(self, node):
         return "int"
@@ -115,7 +125,7 @@ class TypeChecker(NodeVisitor):
 
         symbol = self.symbol_table.get(node.name)
         if symbol is None:
-            self.report_error(f"Line {node.line}: Variable '{node.name}' is not defined.")
+            self.report_error(f"Variable '{node.name}' is not defined.", node.line)
             return None
         return symbol.type
 
@@ -155,8 +165,8 @@ class TypeChecker(NodeVisitor):
             "ok"
         elif left_type != right_type and {left_type, right_type} != {"int", "float"}:
             self.report_error(
-                f"Line {getattr(node, 'line', 'unknown')}: Type mismatch in binary operation '{node.op}': "
-                f"'{left_type}' and '{right_type}' are not compatible.")
+                f"Type mismatch in binary operation '{node.op}': "
+                f"'{left_type}' and '{right_type}' are not compatible.", getattr(node, 'line', 'unknown'))
             return 'unknown'
 
         if left_type == 'vector' and right_type == 'vector':
@@ -165,8 +175,8 @@ class TypeChecker(NodeVisitor):
 
             if left_size != right_size:
                 self.report_error(
-                    f"Line {getattr(node, 'line', 'unknown')}: Cannot perform operation '{node.op}' on vectors of different sizes: "
-                    f"{left_size} and {right_size}.")
+                    f"Cannot perform operation '{node.op}' on vectors of different sizes: "
+                    f"{left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
                 return 'unknown'
 
         elif left_type == 'matrix' and right_type == 'matrix':
@@ -174,14 +184,13 @@ class TypeChecker(NodeVisitor):
             right_size = self.get_variable_size(node.right)
 
             if node.op == '*' and left_size[1] != right_size[0]:
-                self.report_error(f"Line {getattr(node, 'line', 'unknown')}: "
-                                  f"Cannot multiply matrices of shapes {left_size} and {right_size}.")
+                self.report_error(f"Cannot multiply matrices of shapes {left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
                 return 'unknown'
 
             if node.op != "*" and left_size != right_size:
                 self.report_error(
-                    f"Line {getattr(node, 'line', 'unknown')}: Cannot perform operation '{node.op}' on matrices of different sizes: "
-                    f"{left_size} and {right_size}.")
+                    f"Cannot perform operation '{node.op}' on matrices of different sizes: "
+                    f"{left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
                 return 'unknown'
 
         return left_type
@@ -193,11 +202,11 @@ class TypeChecker(NodeVisitor):
         right_type = self.visit(node.right)
 
         if left_type != right_type:
-            self.report_error(f"LINE {node.line}: Type mismatch in relational expression: "
-                              f"'{left_type}' and '{right_type}' are not compatible for operation '{node.op}'.")
+            self.report_error("Type mismatch in relational expression: "
+                              f"'{left_type}' and '{right_type}' are not compatible for operation '{node.op}'.", node.line)
 
         if node.op not in ['==', '!=', '<', '<=', '>', '>=']:
-            self.report_error(f"LINE {node.line}: Unsupported relational operator '{node.op}'.")
+            self.report_error(f"Unsupported relational operator '{node.op}'.")
 
         return 'bool'
 
@@ -206,12 +215,12 @@ class TypeChecker(NodeVisitor):
         value_type = self.visit(node.value)
 
         if node.op not in ['-', '!']:
-            self.report_error(f"LINE {node.line}: Unsupported unary operator '{node.op}'.")
+            self.report_error(f"Unsupported unary operator '{node.op}'.", node.line)
 
         if node.op == '-' and value_type not in ['int', 'float', 'matrix', 'vector']:
             self.report_error(f"LINE {node.line}: Unary '-' operator requires 'int' or 'float', got '{value_type}'.")
         elif node.op == '!' and value_type != 'bool':
-            self.report_error(f"LINE {node.line}: Unary '!' operator requires 'bool', got '{value_type}'.")
+            self.report_error(f"Unary '!' operator requires 'bool', got '{value_type}'.", node.line)
 
         return value_type
 
@@ -220,7 +229,7 @@ class TypeChecker(NodeVisitor):
         value_type = self.visit(node.value)
 
         if value_type != 'matrix':
-            self.report_error(f"LINE {node.line}: Transpose operation requires a matrix, got '{value_type}'.")
+            self.report_error(f"Transpose operation requires a matrix, got '{value_type}'.", node.line)
 
         return 'matrix'
 
@@ -253,18 +262,18 @@ class TypeChecker(NodeVisitor):
                     id_symbol.size = self.get_matrix_size(node.value)
             else:
                 if id_symbol.type != value_type:
-                    self.report_error(f"Line {node.line}: Type mismatch in compound assignment '{node.assign_type}': "
-                                      f"'{id_symbol.type}' and '{value_type}' are not compatible.")
+                    self.report_error(f"Type mismatch in compound assignment '{node.assign_type}': "
+                                      f"'{id_symbol.type}' and '{value_type}' are not compatible.", node.line)
 
     def visit_AssignIndex(self, node):
 
         id_symbol = self.symbol_table.get(node.id)
         if id_symbol is None:
-            self.report_error(f"LINE {node.line}: Variable '{node.id}' is not defined.")
+            self.report_error(f"Variable '{node.id}' is not defined.", node.line)
             return
 
         if id_symbol.type not in ['array', 'matrix']:
-            self.report_error(f"LINE {node.line}: Variable '{node.id}' is not indexable (type: '{id_symbol.type}').")
+            self.report_error(f"Variable '{node.id}' is not indexable (type: '{id_symbol.type}').", node.line)
             return
 
         index_type = [self.visit(node.index)] if not isinstance(node.index, list) else [self.visit(idx) for idx in node.index]
@@ -274,9 +283,8 @@ class TypeChecker(NodeVisitor):
         value_type = self.visit(node.value)
 
         if node.assign_type not in ['=', '+=', '-=', '*=', '/=']:
-            self.report_error(f"LINE {node.line}: Unsupported assignment operator '{node.assign_type}'.")
+            self.report_error(f"Unsupported assignment operator '{node.assign_type}'.", node.line)
             return
-
 
     def visit_ForLoop(self, node):
         self.for_count += 1
@@ -284,7 +292,7 @@ class TypeChecker(NodeVisitor):
         range_type = self.visit(node.range)
 
         if range_type != 'range':
-            self.report_error(f"LINE {node.line}: For loop range must be of type 'range', got '{range_type}'.")
+            self.report_error(f"For loop range must be of type 'range', got '{range_type}'.", node.line)
 
         scope = self.symbol_table.pushScope(f'for_{self.for_count}')
         self.symbol_table.put(scope.name, scope)
@@ -296,7 +304,7 @@ class TypeChecker(NodeVisitor):
         if node.instructions:
             self.visit(node.instructions)
         else:
-            self.report_error(f"LINE {node.line}: Empty loop body in for loop.")
+            self.report_error(f"Empty loop body in for loop.", node.line)
 
         self.in_loop -= 1
 
@@ -306,7 +314,7 @@ class TypeChecker(NodeVisitor):
         self.while_count += 1
         condition_type = self.visit(node.condition)
         if condition_type != 'bool':
-            self.report_error(f"LINE {node.line}: While loop condition must be of type 'bool', got '{condition_type}'.")
+            self.report_error(f"While loop condition must be of type 'bool', got '{condition_type}'.", node.line)
 
         self.in_loop += 1
         scope = self.symbol_table.pushScope(f'while_{self.while_count}')
@@ -315,7 +323,7 @@ class TypeChecker(NodeVisitor):
         if node.instructions:
             self.visit(node.instructions)
         else:
-            self.report_error(f"LINE {node.line}: Empty loop body in while loop.")
+            self.report_error(f"Empty loop body in while loop.", node.line)
 
         self.in_loop -= 1
         self.symbol_table = scope.getParentScope()
@@ -325,14 +333,14 @@ class TypeChecker(NodeVisitor):
         element_types = [self.visit(element) for element in node.elements]
 
         if len(set(element_types)) > 1:
-            self.report_error(f"Line {node.line}: All elements in a vector must have the same type. "
-                              f"Found types: {set(element_types)}.")
+            self.report_error(f"All elements in a vector must have the same type. "
+                              f"Found types: {set(element_types)}.", node.line)
 
         if all(isinstance(element, AST.Vector) for element in node.elements):
             row_sizes = [len(element.elements) for element in node.elements]
             if len(set(row_sizes)) > 1:
-                self.report_error(f"Line {node.line}: Matrix rows must have the same size. "
-                                  f"Found row sizes: {row_sizes}.")
+                self.report_error(f"Matrix rows must have the same size. "
+                                  f"Found row sizes: {row_sizes}.", node.line)
             return 'matrix'
 
         return 'vector'
@@ -341,11 +349,11 @@ class TypeChecker(NodeVisitor):
         id_symbol = self.symbol_table.get(node.id)
 
         if id_symbol is None:
-            self.report_error(f"Line {node.line}: Variable '{node.id}' is not defined.")
+            self.report_error(f"Variable '{node.id}' is not defined.", node.line)
             return 'unknown'
 
         if id_symbol.type not in ['matrix', 'vector']:
-            self.report_error(f"Line {node.line}: Variable '{node.id}' is not indexable (type: '{id_symbol.type}').")
+            self.report_error(f"Variable '{node.id}' is not indexable (type: '{id_symbol.type}').", node.line)
             return 'unknown'
 
         matrix_size = id_symbol.size
@@ -353,21 +361,21 @@ class TypeChecker(NodeVisitor):
         index_types = [self.visit(index) for index in node.indices]
 
         if any(itype != 'int' for itype in index_types):
-            self.report_error(f"Line {node.line}: Array/matrix indices must be integers, got {index_types}.")
+            self.report_error(f"Array/matrix indices must be integers, got {index_types}.", node.line)
             return 'unknown'
 
         num_dimensions = len(matrix_size)
         num_indices = len(node.indices)
 
         if num_indices != num_dimensions:
-            self.report_error(f"Line {node.line}: Matrix access requires {num_dimensions} indices, got {num_indices}.")
+            self.report_error(f"Matrix access requires {num_dimensions} indices, got {num_indices}.", node.line)
             return 'unknown'
 
         for i, index in enumerate(node.indices):
             index_value = index.value
             if index_value > matrix_size[i]:
                 self.report_error(
-                    f"Line {node.line}: Index {index_value} out of bounds for dimension {i + 1} of matrix with size {matrix_size}.")
+                    f"Index {index_value} out of bounds for dimension {i + 1} of matrix with size {matrix_size}.", node.line)
 
         return 'unknown'
 
@@ -378,9 +386,9 @@ class TypeChecker(NodeVisitor):
         end_type = self.visit(node.end)
 
         if start_type != 'int':
-            self.report_error(f"LINE {node.line}: Range start must be of type 'int', got '{start_type}'.")
+            self.report_error(f"Range start must be of type 'int', got '{start_type}'.", node.line)
         if end_type != 'int':
-            self.report_error(f"LINE {node.line}: Range end must be of type 'int', got '{end_type}'.")
+            self.report_error(f"Range end must be of type 'int', got '{end_type}'.", node.line)
 
         return 'range'
 
@@ -390,7 +398,7 @@ class TypeChecker(NodeVisitor):
 
         valid_functions = ['eye', 'zeros', 'ones']
         if node.name not in valid_functions:
-            self.report_error(f"Line {node.line}: Unknown matrix function '{node.name}'.")
+            self.report_error(f"Unknown matrix function '{node.name}'.", node.line)
             return 'unknown'
 
         if node.name == 'eye':
@@ -398,7 +406,7 @@ class TypeChecker(NodeVisitor):
                 return 'matrix'
             else:
                 self.report_error(
-                    f"Line {node.line}: 'eye' function requires one integer parameter, got {param_values}.")
+                    f"'eye' function requires one integer parameter, got {param_values}.", node.line)
         elif node.name in ['zeros', 'ones']:
             if len(param_values) == 1 and isinstance(param_values[0], int):
                 return 'matrix'
@@ -406,10 +414,10 @@ class TypeChecker(NodeVisitor):
                 return 'matrix'
             else:
                 self.report_error(
-                    f"Line {node.line}: '{node.name}' function requires one or two integer parameters, got {param_values}.")
+                    f"'{node.name}' function requires one or two integer parameters, got {param_values}.", node.line)
 
         return 'unknown'
 
     def visit_Error(self, node):
 
-        self.report_error(f"Line {node.line}: {node.message}")
+        self.report_error(f"{node.message}", node.line)
