@@ -1,8 +1,9 @@
-from sly import Parser #type: ignore
+from sly import Parser
 from lab1.scanner_sly import Scanner
 from lab3 import AST
 import os
 from tokens_names import *
+
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 debug_path = os.path.join(SCRIPT_PATH, "parser_debug_data", "parser.out")
 
@@ -10,7 +11,10 @@ class Mparser(Parser):
 
     tokens = Scanner.tokens
     
-    debugfile = debug_path
+    checker = False
+    
+    # debug_file = debug_path
+    debug_file = None
     
     precedence = (
         ("nonassoc", IFX),
@@ -21,17 +25,11 @@ class Mparser(Parser):
         ("left", TIMES, DIVIDE, DOTMUL, DOTDIV),
         ("right", UMINUS),
         ("left", TRANSPOSE),
-        ("left", COLON),  # Dodajemy precedencję dla COLON
+        ("left", COLON),
     )
 
-    def __init__(self, debug = False):
+    def __init__(self):
         super().__init__()
-        self.variables = {}
-        if debug :
-            self.debugfile = debug_path
-        else :
-            self.debugfile = None
-            
 
     @_('instructions') # type: ignore
     def instructions_opt(self, p):
@@ -56,7 +54,7 @@ class Mparser(Parser):
     @_('RETURN expr LINE_END') # type: ignore
     def instruction(self, p):
         return AST.ReturnInstruction(value=p.expr, line = p.lineno)
-
+    
     @_('BREAK LINE_END', # type: ignore
        'CONTINUE LINE_END')
     def instruction(self, p):
@@ -68,6 +66,7 @@ class Mparser(Parser):
 
     @_('LBRACE instructions RBRACE') # type: ignore
     def instruction(self, p):
+        print("FOUND instructions")
         return p.instructions
     
     @_('IF LPAREN expr RPAREN instruction %prec IFX') # type: ignore
@@ -85,7 +84,7 @@ class Mparser(Parser):
     @_('FOR ID ASSIGN expr COLON expr instruction') # type: ignore
     def instruction(self, p):
         return AST.ForLoop(id=p.ID, range=AST.Range(start=p.expr0, end=p.expr1), instructions=p.instruction, line = p.lineno)
-
+    
     @_('assignment LINE_END') # type: ignore
     def instruction(self, p):
         return p.assignment
@@ -93,8 +92,6 @@ class Mparser(Parser):
     @_('ID assign expr') # type: ignore
     def assignment(self, p):
         return AST.Assignment(id=p.ID, assign_type=p.assign, value=p.expr, line = p.lineno)
-
-
 
     @_('ASSIGN', # type: ignore
     'ADDASSIGN',

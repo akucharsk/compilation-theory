@@ -1,7 +1,7 @@
 from lab3 import AST
 from lab4.SymbolTable import SymbolTable, VariableSymbol
 from printing import print_color
-from collections import defaultdict
+from tokens_names import *
 
 class NodeVisitor(object):
 
@@ -27,7 +27,7 @@ class NodeVisitor(object):
     def visit(self, node):
         method = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method, self.generic_visit)
-        return visitor(node)  # type: ignore
+        return visitor(node)
 
     def generic_visit(self, node):
         if isinstance(node, list):
@@ -67,7 +67,7 @@ class TypeChecker(NodeVisitor):
         try:
             return super().visit(node)
         except Exception as e:
-            line = getattr(node, 'line', 'unknown')
+            line = getattr(node, 'line', UNKNOWN)
             self.report_error(f"{str(e)}", line)
 
     def visit_CompoundStatement(self, node):
@@ -86,7 +86,7 @@ class TypeChecker(NodeVisitor):
         if node.instructions:
             self.visit(node.instructions)
         else:
-            self.report_error(f"Missing instructions in 'if' block.", node.line)
+            self.report_error(f"Missing instructions in {IF} block.", node.line)
 
         self.symbol_table = scope.getParentScope()
         if node.else_instruction:
@@ -99,7 +99,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_PrintInstruction(self, node):
         if node.value is None:
-            self.report_error(f"Missing value in 'print' instruction.", node.line)
+            self.report_error(f"Missing value in {PRINT} instruction.", node.line)
         else:
             self.visit(node.value)
 
@@ -107,15 +107,15 @@ class TypeChecker(NodeVisitor):
         if node.value is not None:
             self.visit(node.value)
         else:
-            self.report_error(f"'return' statement with no value.", node.line)
+            self.report_error(f"{RETURN} statement with no value.", node.line)
 
     def visit_BreakInstruction(self, node):
         if self.in_loop == 0:
-            self.report_error(f"'break' statement used outside of a loop.", node.line)
+            self.report_error(f"{BREAK} statement used outside of a loop.", node.line)
 
     def visit_ContinueInstruction(self, node):
         if self.in_loop == 0:
-            self.report_error(f"'continue' statement used outside of a loop.", node.line)
+            self.report_error(f"{CONTINUE} statement used outside of a loop.", node.line)
 
     def visit_IntNum(self, node):
         return "int"
@@ -142,7 +142,7 @@ class TypeChecker(NodeVisitor):
 
     def get_matrix_size(self, node):
         if isinstance(node, AST.MatrixFunction):
-            if node.name in ['eye', 'zeros', 'ones']:
+            if node.name in [EYE, ZEROS, ONES]:
                 if len(node.params) == 1 and isinstance(node.params[0], AST.IntNum):
                     size = [node.params[0].value, node.params[0].value]
                     return size
@@ -154,7 +154,7 @@ class TypeChecker(NodeVisitor):
     def get_variable_size(self, node):
         if isinstance(node, AST.Variable):
             symbol = self.symbol_table.get(node.name)
-            if symbol and symbol.type == 'matrix' and hasattr(symbol, 'size'):
+            if symbol and symbol.type == MATRIX and hasattr(symbol, 'size'):
                 return symbol.size
         return None
 
@@ -167,32 +167,32 @@ class TypeChecker(NodeVisitor):
         if left_type != right_type:
             self.report_error(
                 f"Type mismatch in binary operation '{node.op}': "
-                f"'{left_type}' and '{right_type}' are not compatible.", getattr(node, 'line', 'unknown'))
-            return 'unknown'
+                f"'{left_type}' and '{right_type}' are not compatible.", getattr(node, 'line', UNKNOWN))
+            return UNKNOWN
 
-        if left_type == 'vector' and right_type == 'vector':
-            left_size = self.get_vector_size(node.left)
-            right_size = self.get_vector_size(node.right)
+        # if left_type == 'vector' and right_type == 'vector':
+        #     left_size = self.get_vector_size(node.left)
+        #     right_size = self.get_vector_size(node.right)
 
-            if left_size != right_size:
-                self.report_error(
-                    f"Cannot perform operation '{node.op}' on vectors of different sizes: "
-                    f"{left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
-                return 'unknown'
+        #     if left_size != right_size:
+        #         self.report_error(
+        #             f"Cannot perform operation '{node.op}' on vectors of different sizes: "
+        #             f"{left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
+        #         return 'unknown'
 
-        elif left_type == 'matrix' and right_type == 'matrix':
+        elif left_type == MATRIX and right_type == MATRIX:
             left_size = self.get_variable_size(node.left)
             right_size = self.get_variable_size(node.right)
 
             if node.op == '*' and left_size[1] != right_size[0]:
                 self.report_error(f"Cannot multiply matrices of shapes {left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
-                return 'unknown'
+                return UNKNOWN
 
             if node.op != "*" and left_size != right_size:
                 self.report_error(
                     f"Cannot perform operation '{node.op}' on matrices of different sizes: "
                     f"{left_size} and {right_size}.", getattr(node, 'line', 'unknown'))
-                return 'unknown'
+                return UNKNOWN
 
         return left_type
 
@@ -206,67 +206,63 @@ class TypeChecker(NodeVisitor):
             self.report_error("Type mismatch in relational expression: "
                               f"'{left_type}' and '{right_type}' are not compatible for operation '{node.op}'.", node.line)
 
-        if node.op not in ['==', '!=', '<', '<=', '>', '>=']:
+        if node.op not in [EQ_OP, NEQ_OP, LT_OP, LTE_OP, GT_OP, GTE_OP]:
             self.report_error(f"Unsupported relational operator '{node.op}'.")
 
-        return 'bool'
+        return BOOL
 
     def visit_UnaryExpr(self, node):
 
         value_type = self.visit(node.value)
 
-        if node.op not in ['-', '!']:
+        if node.op != UMINUS_OP :
             self.report_error(f"Unsupported unary operator '{node.op}'.", node.line)
 
-        if node.op == '-' and value_type not in ['int', 'float']:
-            self.report_error(f"Unary '-' operator requires 'int' or 'float', got '{value_type}'.", node.line)
-        elif node.op == '!' and value_type != 'bool':
-            self.report_error(f"Unary '!' operator requires 'bool', got '{value_type}'.", node.line)
-
+        if node.op == UMINUS_OP and value_type in [STRING] :
+            self.report_error(f"{UMINUS_PRINT} operator won't work with '{value_type}'.", node.line)
+        
         return value_type
 
     def visit_Transpose(self, node):
 
         value_type = self.visit(node.value)
 
-        if value_type != 'matrix':
-            self.report_error(f"Transpose operation requires a matrix, got '{value_type}'.", node.line)
+        if value_type != MATRIX:
+            self.report_error(f"{TRANSPOSE} operation requires a {MATRIX_PRINT} object, got '{value_type}'.", node.line)
 
-        return 'matrix'
+        return MATRIX
 
     def visit_String(self, node):
 
-        return 'string'
+        return STRING
 
     def visit_Assignment(self, node):
 
         value_type = self.visit(node.value)
-
+        print(value_type)
         # Get the variable from the symbol table
         id_symbol = self.symbol_table.get(node.id)
         if id_symbol is None:
             new_symbol = VariableSymbol(name=node.id, type=value_type)
-
-            if value_type == 'int':
+            if value_type == INTNUM:
                 new_symbol.size = 1
-            elif value_type == 'vector':
-                new_symbol.size = len(node.value.elements)
-            elif value_type == 'matrix':
+            elif value_type == INTNUM:
                 new_symbol.size = self.get_matrix_size(node.value)
 
             self.symbol_table.put(node.id, new_symbol)
         else:
-            if node.assign_type == '=':
+            if node.assign_type == ASSIGN_OP:
                 id_symbol.type = value_type
-                if value_type == 'vector':
-                    id_symbol.size = len(node.value.elements)
-                elif value_type == 'matrix':
+                if value_type == MATRIX:
                     id_symbol.size = self.get_matrix_size(node.value)
             else:
                 if id_symbol.type != value_type:
                     self.report_error(f"Type mismatch in compound assignment '{node.assign_type}': "
                                       f"'{id_symbol.type}' and '{value_type}' are not compatible.", node.line)
 
+        print(new_symbol)
+        
+        
     def visit_AssignIndex(self, node):
 
         id_symbol = self.symbol_table.get(node.id)
@@ -274,22 +270,22 @@ class TypeChecker(NodeVisitor):
             self.report_error(f"Variable '{node.id}' is not defined.", node.line)
             return
 
-        if id_symbol.type not in ['array', 'matrix']:
+        if id_symbol.type != MATRIX :
             self.report_error(f"Variable '{node.id}' is not indexable (type: '{id_symbol.type}').", node.line)
             return
 
         index_type = self.visit(node.index)
-        if index_type != 'int':
-            self.report_error(f"Index must be of type 'int', got '{index_type}'.", node.line)
+        if index_type not in  [INTNUM, RANGE] :
+            self.report_error(f"Index must be of type {INTNUM_PRINT} or {RANGE_PRINT}, got '{index_type}'.", node.line)
 
         value_type = self.visit(node.value)
 
-        if node.assign_type not in ['=', '+=', '-=', '*=', '/=']:
+        if node.assign_type not in [ASSIGN_OP, ADDASSIGN_OP, SUBASSIGN_OP, MULASSIGN_OP, DIVASSIGN_OP]:
             self.report_error(f"Unsupported assignment operator '{node.assign_type}'.", node.line)
             return
 
         element_type = id_symbol.element_type if hasattr(id_symbol, 'element_type') else id_symbol.type
-        if node.assign_type == '=' and element_type != value_type:
+        if node.assign_type == ASSIGN_OP and element_type != value_type:
             self.report_error(f"Type mismatch in indexed assignment: "
                               f"cannot assign '{value_type}' to '{element_type}' in '{node.id}'.", node.line)
         elif node.assign_type != '=' and element_type != value_type:

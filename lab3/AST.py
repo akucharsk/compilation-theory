@@ -16,6 +16,7 @@ class Node:
 
 # INSTRUCTIONS
 
+
 @dataclass
 class CompoundStatement(Node):
     instructions: List[Node] = None

@@ -8,6 +8,9 @@ class VariableSymbol(Symbol):
         super().__init__(name)
         self.type = type
         self.size = size
+        
+    def __str__(self) :
+        return "<{name}:{type}:{size}>".format(name=self.name, type=self.type, size=self.size)
 
 
 class SymbolTable:

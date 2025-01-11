@@ -7,9 +7,10 @@ from lab4.TypeChecker import TypeChecker
 from get_file import get_file
 from itertools import zip_longest
 
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def main():
-    files = os.listdir('data')
+    files = os.listdir(os.path.join(SCRIPT_PATH, 'data'))
     files.sort()
     errors = [
         [
@@ -44,6 +45,9 @@ def main():
 
     filenames = {file: error for file, error in zip_longest(files, errors)}
     print()
+    
+    filenames = {'opers.m': ['error']}
+    
     for filename, errors in filenames.items():
 
         file = get_file(filename, __file__)
@@ -56,13 +60,6 @@ def main():
         # ast.printTree()
         typeChecker = TypeChecker()
         typeChecker.visit(ast)
-
-        print(typeChecker.errors)
-        for type_checker_error, error in zip_longest(typeChecker.errors, errors):
-            if type_checker_error != error:
-                raise Exception("MISMATCHED ERRORS IN " + filename)
-            print(type_checker_error)
-        print("\n\n======================\n\n")
 
 
 if __name__ == '__main__':

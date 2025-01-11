@@ -5,10 +5,9 @@ from get_file import get_file
 
 def main() :
     filenames = []
-    # filenames.append("example1.m")
+    filenames.append("example1.m")
     # filenames.append("example2.m")
     # filenames.append("example3.m")
-    filenames.append("matrix.m")
     print()
     for filename in filenames :
 
@@ -16,9 +15,9 @@ def main() :
         
         text = file.read()
         lexer = Scanner()
-        parser = Mparser(debug = True)
+        parser = Mparser()
 
         ast = parser.parse(lexer.tokenize(text))
-        
+        print(ast)
         ast.printTree()
 
