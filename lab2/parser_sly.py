@@ -25,7 +25,6 @@ class Mparser(Parser):
 
     def __init__(self):
         super().__init__()
-        self.variables = {}
 
     @_('instructions') # type: ignore
     def instructions_opt(self, p):

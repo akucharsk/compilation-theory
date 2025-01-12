@@ -20,3 +20,9 @@ if (m==n) {
     if (m >= n) 
         print res;
 }
+
+a = True;
+
+if (True) {
+    print str;
+}

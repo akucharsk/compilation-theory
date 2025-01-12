@@ -1,0 +1,53 @@
+Program -> Instructions
+Instructions -> Instruction Instructions | Epsilon
+Instruction -> Assignment LINE_END 
+             | Loop 
+             | IfElse 
+             | Print LINE_END 
+             | Expression LINE_END
+             | Break LINE_END
+             | Continue LINE_END
+             | Return LINE_END
+Epsilon -> ε
+Assignment -> IDExpression AssignOp Expression
+AssignOp -> ASSIGN | ADDASSIGN | SUBASSIGN | MULASSIGN | DIVASSIGN
+IDExpression -> ID Indexes
+Indexes -> LBRACKET Expression RBRACKET Indexes 
+         | LBRACKET Elements RBRACKET Indexes 
+         | Epsilon
+         
+Loop -> FOR ID ASSIGN Range LBRACE Instructions RBRACE 
+      | WHILE LPAREN Boolean RPAREN LBRACE Instructions RBRACE
+IfElse -> MatchedIfElse | UnmatchedIfElse
+MatchedIfElse -> IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE ELSE LBRACE Instructions RBRACE
+               | IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE ElseIfList ELSE LBRACE Instructions RBRACE
+UnmatchedIfElse -> IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE
+                 | IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE ElseIfList
+                 | IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE ELSE UnmatchedIfElse
+ElseIfList -> ELSE IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE 
+            | ELSE IF LPAREN Boolean RPAREN LBRACE Instructions RBRACE ElseIfList
+Print -> PRINT LPAREN Elements RPAREN
+       | PRINT Elements
+Expression -> Term | Term BinOp Expression
+Term -> Factor | Factor HighOp Term
+Factor -> LPAREN Expression RPAREN 
+        | MINUS Factor 
+        | IDExpression 
+        | Variable 
+        | Range 
+        | Factor TRANSPOSE
+HighOp -> TIMES | DIVIDE | DOTMUL | DOTDIV
+BinOp -> PLUS | MINUS | DOTADD | DOTSUB
+Variable -> INTNUM | FLOATNUM | STRING | Matrix | Boolean
+Matrix -> LBRACKET Elements RBRACKET | MatrixFunction LPAREN Expression RPAREN
+MatrixFunction -> ONES | ZEROS | EYE
+Range -> Expression COLON Expression
+CondOp -> LT | LTE | GT | GTE | EQ | NEQ
+Boolean -> BOOLEAN | LPAREN Boolean RPAREN | Boolean LogicOp Boolean | NOT Boolean | Expression CondOp Expression
+LogicOp -> Or | And
+Or -> OR | ORC
+And -> AND | ANDC
+Elements -> Elements COMMA Expression | Expression
+Break -> BREAK
+Continue -> CONTINUE
+Return -> RETURN | RETURN Elements

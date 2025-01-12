@@ -1,6 +1,6 @@
 import sys
 from lab1.scanner_sly import Scanner
-from lab2.parser_sly import Mparser
+from lab2.parser2 import Mparser
 from get_file import get_file
 
 

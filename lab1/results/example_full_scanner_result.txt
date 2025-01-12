@@ -21,6 +21,11 @@ if (m==n) {
         print res;
 }
 
+a = True;
+
+if (True) {
+    print str;
+}
 
 ===
 
@@ -138,3 +143,16 @@ Token(type='PRINT', value='print', lineno=21, index=601, end=606)
 Token(type='ID', value='res', lineno=21, index=607, end=610)
 Token(type='LINE_END', value=';', lineno=21, index=610, end=611)
 Token(type='RBRACE', value='}', lineno=22, index=612, end=613)
+Token(type='ID', value='a', lineno=24, index=615, end=616)
+Token(type='ASSIGN', value='=', lineno=24, index=617, end=618)
+Token(type='BOOLEAN', value=True, lineno=24, index=619, end=623)
+Token(type='LINE_END', value=';', lineno=24, index=623, end=624)
+Token(type='IF', value='if', lineno=26, index=626, end=628)
+Token(type='LPAREN', value='(', lineno=26, index=629, end=630)
+Token(type='BOOLEAN', value=True, lineno=26, index=630, end=634)
+Token(type='RPAREN', value=')', lineno=26, index=634, end=635)
+Token(type='LBRACE', value='{', lineno=26, index=636, end=637)
+Token(type='PRINT', value='print', lineno=27, index=642, end=647)
+Token(type='ID', value='str', lineno=27, index=648, end=651)
+Token(type='LINE_END', value=';', lineno=27, index=651, end=652)
+Token(type='RBRACE', value='}', lineno=28, index=653, end=654)

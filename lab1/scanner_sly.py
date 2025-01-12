@@ -13,7 +13,7 @@ class Scanner(Lexer):
         LBRACKET, RBRACKET, DOTADD, DOTSUB, DOTMUL, DOTDIV,
         EQ, NEQ, LT, LTE, GT, GTE, RANGE, COMMA, LINE_END, TRANSPOSE,
         FOR, WHILE, IF, ELSE, RETURN, BREAK, CONTINUE, EYE, ZEROS, ONES, PRINT,
-        ID, INTNUM, FLOATNUM, STRING
+        ID, INTNUM, FLOATNUM, STRING, BOOLEAN
     }
 
     EQ = r'=='
@@ -52,6 +52,13 @@ class Scanner(Lexer):
 
     TRANSPOSE = r'\''
 
+
+    BOOLEAN = r'(?i:true|false)'
+    @_(BOOLEAN)  # type: ignore
+    def BOOLEAN(self, t):
+        t.value = t.value.lower() == 'true'  # Zamiana tekstu na wartość logiczną
+        return t
+
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
     ID['for'] = FOR
@@ -78,16 +85,17 @@ class Scanner(Lexer):
     def ignore_newline(self, t):
         self.lineno += t.value.count('\n')  # Dodaj liczbę nowych linii
 
-
     @_(FLOATNUM) # type: ignore
     def FLOATNUM(self, t):
         t.value = float(t.value)
         return t
 
-    @_(r'[+-]?\d*') # type: ignore
+    @_(INTNUM) # type: ignore
     def INTNUM(self, t):
         t.value = int(t.value)
         return t
+    
+
 
     @_(r'#.*') # type: ignore
     def ignore_comment(self, t):
