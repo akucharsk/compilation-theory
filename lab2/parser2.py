@@ -24,9 +24,6 @@ class Mparser(Parser):
         ('right', TRANSPOSE)           # Transpozycja
     )
 
-
-
-
     start = 'program'
     
     def __init__(self):
