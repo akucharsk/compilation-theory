@@ -52,7 +52,6 @@ class ContinueInstruction(Node):
     line: int = None
 
 
-
 # EXPRESSIONS
 
 @dataclass

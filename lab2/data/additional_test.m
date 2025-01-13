@@ -4,3 +4,5 @@ D = A.+B' ;   # add element-wise A with transpose of B
 for j = 1:10 {
     print j;
 }
+
+a;

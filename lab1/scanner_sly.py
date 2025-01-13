@@ -4,16 +4,16 @@ from tokens_names import *
 class Scanner(Lexer):
 
     ignore = r' \t'
-    ignore_comment = r'#.*'
-    ignore_newline = r'\n'
+    _ignore_comment = r'#.*'
+    _ignore_newline = r'\n'
 
     tokens = {
         PLUS, MINUS, TIMES, DIVIDE, ASSIGN, ADDASSIGN,
         SUBASSIGN, MULASSIGN, DIVASSIGN, LPAREN, RPAREN, LBRACE, RBRACE,
         LBRACKET, RBRACKET, DOTADD, DOTSUB, DOTMUL, DOTDIV,
-        EQ, NEQ, LT, LTE, GT, GTE, RANGE, COMMA, LINE_END, TRANSPOSE,
+        EQ, NEQ, LT, LTE, GT, GTE, COLON, COMMA, LINE_END, TRANSPOSE,
         FOR, WHILE, IF, ELSE, RETURN, BREAK, CONTINUE, EYE, ZEROS, ONES, PRINT,
-        ID, INTNUM, FLOATNUM, STRING, BOOLEAN
+        ID, INTNUM, FLOATNUM, STRING
     }
 
     EQ = r'=='
@@ -46,18 +46,11 @@ class Scanner(Lexer):
     DOTMUL = r'\.\*'
     DOTDIV = r'\./'
 
-    RANGE = r':'
+    COLON = r':'
     COMMA = r','
     LINE_END = r';'
 
     TRANSPOSE = r'\''
-
-
-    BOOLEAN = r'(?i:true|false)'
-    @_(BOOLEAN)  # type: ignore
-    def BOOLEAN(self, t):
-        t.value = t.value.lower() == 'true'  # Zamiana tekstu na wartość logiczną
-        return t
 
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
@@ -81,22 +74,21 @@ class Scanner(Lexer):
     INTNUM = rf'{_intnum}'
     STRING = r'"([^"\\\n]|\\")*"'
 
-    @_(r'\n') # type: ignore
+    @_(_ignore_newline) # type: ignore
     def ignore_newline(self, t):
         self.lineno += t.value.count('\n')  # Dodaj liczbę nowych linii
+
 
     @_(FLOATNUM) # type: ignore
     def FLOATNUM(self, t):
         t.value = float(t.value)
         return t
 
-    @_(INTNUM) # type: ignore
+    @_(r'[+-]?\d*') # type: ignore
     def INTNUM(self, t):
         t.value = int(t.value)
         return t
-    
 
-
-    @_(r'#.*') # type: ignore
+    @_(_ignore_comment) # type: ignore
     def ignore_comment(self, t):
         pass

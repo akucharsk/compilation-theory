@@ -23,6 +23,8 @@ class Mparser(Parser):
         ("left", TRANSPOSE),
     )
 
+    start = 'instructions_opt'
+
     def __init__(self):
         super().__init__()
 
@@ -75,7 +77,7 @@ class Mparser(Parser):
     def instruction(self, p):
         return AST.WhileLoop(condition=p.expr, instructions=p.instruction, line = p.lineno)
 
-    @_('FOR ID ASSIGN expr RANGE expr instruction') # type: ignore
+    @_('FOR ID ASSIGN expr COLON expr instruction') # type: ignore
     def instruction(self, p):
         return AST.ForLoop(id=p.ID, range=AST.Range(start=p.expr0, end=p.expr1), instructions=p.instruction, line = p.lineno)
 
@@ -175,3 +177,12 @@ class Mparser(Parser):
     @_('expr TRANSPOSE') # type: ignore
     def expr(self, p):
         return AST.Transpose(value=p.expr, line = p.lineno)
+    
+
+    def error(self, token):
+        text = f"Syntax error at EOF (end of file)"
+        if token:
+            text = f"Syntax error at line {token.lineno}, token={token.type}"
+        # self.errok()  # Przechodź przez błąd, aby parser mógł kontynuować.
+        print(text)
+        return AST.Error(line = token.lineno, message = text)

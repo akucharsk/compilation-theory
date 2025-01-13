@@ -1,8 +1,8 @@
-# from lab1.main import main as lab1_main
+from lab1.main import main as lab1_main
 from lab2.main import main as lab2_main
-# from lab3.main import main as lab3_main
-# from lab4.main import main as lab4_main
-# from lab5.main import main as lab5_main
+from lab3.main import main as lab3_main
+from lab4.main import main as lab4_main
+from lab5.main import main as lab5_main
 
 if __name__ == "__main__":
     # lab1_main()
