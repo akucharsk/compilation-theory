@@ -1,7 +1,18 @@
+class Token() :
+    def __init__(self, text, symbol, representation) :
+        self.text = text
+        self.symbol = symbol
+        self.representation = representation
+        
+    def __repr__(self) :
+        return self.representation
+
 PLUS = "PLUS"
 PLUS_OP = "+"
+# PLUS = Token("PLUS", "+", "Plus")
 MINUS = "MINUS"
 MINUS_OP = "-"
+# MINUS = Token("MINUS", "-", "Minus")
 TIMES = "TIMES"
 TIMES_OP = "*"
 DIVIDE = "DIVIDE"
