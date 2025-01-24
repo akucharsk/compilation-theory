@@ -6,8 +6,8 @@ from get_file import get_file
 def main() :
     filenames = []
     filenames.append("example1.m")
-    # filenames.append("example2.m")
-    # filenames.append("example3.m")
+    filenames.append("example2.m")
+    filenames.append("example3.m")
     print()
     for filename in filenames :
 

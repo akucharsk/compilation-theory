@@ -18,7 +18,7 @@ def main() :
         
         text = file.read()
         lexer = Scanner()
-        parser = Mparser(debug = True)
+        parser = Mparser()
 
         test = parser.parse(lexer.tokenize(text))
         print(f"File {filename} parsed\n")

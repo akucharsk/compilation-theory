@@ -1,16 +1,23 @@
+from tokens_names import *
+
 class Symbol:
     def __init__(self, name):
         self.name = name
 
 
 class VariableSymbol(Symbol):
-    def __init__(self, name, type, size = None):
+    def __init__(self, name, type, size = None, dtype = None, value = None):
         super().__init__(name)
         self.type = type
         self.size = size
+        self.dtype = dtype
+        self.value = value
         
     def __str__(self) :
-        return "<{name}:{type}:{size}>".format(name=self.name, type=self.type, size=self.size)
+        return "<{name}:{type}:{size}{string}>".format(name=self.name, type=self.type, size=self.size, string = f":{self.dtype}" if self.type == MATRIX else "")
+    
+    def __repr__(self) :
+        return str(self)
 
 
 class SymbolTable:

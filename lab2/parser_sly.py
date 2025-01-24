@@ -7,6 +7,7 @@ from printing import print_color
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 debug_path = os.path.join(SCRIPT_PATH, "parser_debug_data", "parser.out")
+debug_path = None
 
 class Mparser(Parser):
 
@@ -29,6 +30,7 @@ class Mparser(Parser):
 
     def __init__(self):
         super().__init__()
+        self.correct = True
 
     @_('instructions') # type: ignore
     def instructions_opt(self, p):
@@ -57,18 +59,18 @@ class Mparser(Parser):
     @_('BREAK LINE_END', # type: ignore
     'CONTINUE LINE_END')
     def instruction(self, p):
-        val = p[0].upper()
+        val = find_token(p[0])
         if val == BREAK:
-            return AST.BreakInstruction(value = p[0], line = p.lineno)
+            return AST.BreakInstruction(value = val, line = p.lineno)
         elif val == CONTINUE:
-            return AST.ContinueInstruction(value = p[0], line = p.lineno)
+            return AST.ContinueInstruction(value = val, line = p.lineno)
 
     @_('LBRACE instructions RBRACE') # type: ignore
     def instruction(self, p):
         return p.instructions
     
     @_('IF LPAREN expr RPAREN instruction %prec IFX') # type: ignore
-    def instruction(self, p):
+    def instruction(self, p) :
         return AST.ConditionalInstruction(condition=p.expr, instructions=p.instruction, else_instruction=None, line = p.lineno)
 
     @_('IF LPAREN expr RPAREN instruction ELSE instruction') # type: ignore
@@ -95,9 +97,14 @@ class Mparser(Parser):
     def assignment(self, p):
         return AST.AssignIndex(id=p.ID, index=p.elements, assign_type=p.assign, value=p.expr, line = p.lineno)
 
+
     @_('ID LBRACKET elements RBRACKET') # type: ignore
     def expr(self, p):
-        return AST.ArrayAccess(p[0], p[2], line = p.lineno)
+        return AST.MatrixAccess(id = p[0], indices = p[2], line = p.lineno)
+    
+    @_('ID LBRACKET expr COLON expr RBRACKET') # type: ignore
+    def expr(self, p):
+        return AST.MatrixAccess(id = p[0], indices = [p.expr0, p.expr1], line = p.lineno)
 
     @_('ASSIGN', # type: ignore
     'ADDASSIGN',
@@ -105,7 +112,7 @@ class Mparser(Parser):
     'MULASSIGN',
     'DIVASSIGN')
     def assign(self, p):
-        return p[0]
+        return find_token(p[0])
 
     @_('expr EQ expr', # type: ignore
        'expr NEQ expr',
@@ -114,21 +121,21 @@ class Mparser(Parser):
        'expr LTE expr',
        'expr GTE expr')
     def expr(self, p):
-        return AST.RelationExpr(op=p[1], left=p.expr0, right=p.expr1, line = p.lineno)
+        return AST.RelationExpr(op=find_token(p[1]), left=p.expr0, right=p.expr1, line = p.lineno)
 
     @_('expr PLUS expr', # type: ignore
        'expr MINUS expr',
        'expr TIMES expr',
        'expr DIVIDE expr')
     def expr(self, p):
-        return AST.BinExpr(op=p[1], left=p.expr0, right=p.expr1, line = p.lineno)
+        return AST.BinExpr(op=find_token(p[1]), left=p.expr0, right=p.expr1, line = p.lineno)
 
     @_('expr DOTADD expr', # type: ignore
        'expr DOTSUB expr',
        'expr DOTMUL expr',
        'expr DOTDIV expr')
     def expr(self, p):
-        return AST.BinExpr(op=p[1], left=p.expr0, right=p.expr1, line = p.lineno)
+        return AST.BinExpr(op=find_token(p[1]), left=p.expr0, right=p.expr1, line = p.lineno)
 
     @_('LPAREN expr RPAREN') # type: ignore
     def expr(self, p):
@@ -154,19 +161,19 @@ class Mparser(Parser):
        'ZEROS LPAREN elements RPAREN',
        'ONES LPAREN elements RPAREN')
     def expr(self, p):
-        return AST.MatrixFunction(name=p[0], params=p.elements, line = p.lineno)
+        return AST.MatrixFunction(name=find_token(p[0]), params=p.elements, line = p.lineno)
 
     @_('MINUS expr %prec UMINUS') # type: ignore
     def expr(self, p):
-        return AST.UnaryExpr(op='-', value=p.expr, line = p.lineno)
+        return AST.UnaryExpr(op=find_token(UMINUS), value=p.expr, line = p.lineno)
 
-    @_('vector') # type: ignore
+    @_('matrix') # type: ignore
     def expr(self, p):
-        return p.vector
+        return p.matrix
 
     @_('LBRACKET elements RBRACKET') # type: ignore
-    def vector(self, p):
-        return AST.Vector(elements=p.elements, line = p.lineno)
+    def matrix(self, p):
+        return AST.Matrix(elements=p.elements, line = p.lineno)
 
     @_('expr COMMA elements') # type: ignore
     def elements(self, p):
@@ -185,5 +192,6 @@ class Mparser(Parser):
         text = f"Syntax error at EOF (end of file)"
         if token:
             text = f"Syntax error at line {token.lineno}, token={token.type}"
-        # self.errok()  # Przechodź przez błąd, aby parser mógł kontynuować.
+        # self.errok()
         print_color(text, color="red")
+        self.correct = False

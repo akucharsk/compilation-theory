@@ -1,2 +1,4 @@
 n = 10;
-for i = 1:n print "*" * i;
+for i = 1:n {
+    print "*" * i;
+}

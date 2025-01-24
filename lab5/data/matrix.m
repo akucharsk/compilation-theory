@@ -6,10 +6,10 @@ C = A .+ B;
 print C;
 
 D = zeros(3, 4);
-D[0, 2, 3] = 42;
+D[0, 2] = 42;
 % D[0][2] = 42;
-D[a:b, c:d] = 7;
-D[1:3, 2:4] = D[0, 1]; % opcjonalnie dla zainteresowanych
+% D[a:b, c:d] = 7;
+% D[1:3, 2:4] = D[0, 1]; # opcjonalnie dla zainteresowanych
 print D;
 print D[2, 2];
 
@@ -20,5 +20,3 @@ F = -D';
 print F;
 print E;
 
-
-A = [[[[1,2,3],2,3],2,3],2,3];

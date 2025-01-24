@@ -167,6 +167,7 @@ class MatrixAccess(Node):
     line: int = None
 
 
+
 # FUNCTIONS
 
 @dataclass
@@ -182,4 +183,3 @@ class MatrixFunction(Node):
 class Error(Node):
     message: str
     line: int = None
-
