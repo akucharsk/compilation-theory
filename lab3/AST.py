@@ -16,6 +16,7 @@ class Node:
 
 # INSTRUCTIONS
 
+
 @dataclass
 class CompoundStatement(Node):
     instructions: List[Node] = None
@@ -50,7 +51,6 @@ class BreakInstruction(Node):
 class ContinueInstruction(Node):
     value: Any = None
     line: int = None
-
 
 
 # EXPRESSIONS
@@ -130,7 +130,6 @@ class AssignIndex(Node):
 
 # LOOPS
 
-
 @dataclass
 class Range(Node):
     start: Any
@@ -153,20 +152,20 @@ class WhileLoop(Node):
     line: int = None
 
 
-
-# ARRAYS AND RANGES
+# MATRICES AND RANGES
 
 @dataclass
-class Vector(Node):
+class Matrix(Node):
     elements: List[Any]
     line: int = None
 
 
 @dataclass
-class ArrayAccess(Node):
+class MatrixAccess(Node):
     id: Node
     indices: List[Node]
     line: int = None
+
 
 
 # FUNCTIONS
@@ -178,11 +177,9 @@ class MatrixFunction(Node):
     line: int = None
 
 
-
 # ERROR
 
 @dataclass
 class Error(Node):
     message: str
     line: int = None
-

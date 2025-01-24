@@ -19,6 +19,11 @@ class TreePrinter:
     @addToClass(AST.IntNum)
     def printTree(self, indent=0):
         print(indent_string(indent) + str(self.value))
+        
+        
+    @addToClass(AST.FloatNum)
+    def printTree(self, indent=0):
+        print(indent_string(indent) + str(self.value))
 
     @addToClass(AST.Variable)
     def printTree(self, indent=0):
@@ -51,9 +56,9 @@ class TreePrinter:
         for param in self.params:
             param.printTree(indent + 1)
             
-    @addToClass(AST.Vector)
+    @addToClass(AST.Matrix)
     def printTree(self, indent=0):
-        print(indent_string(indent) + VECTOR)
+        print(indent_string(indent) + MATRIX)
         for element in self.elements:
             element.printTree(indent + 1)
 
@@ -65,11 +70,11 @@ class TreePrinter:
         for idx in self.index:
             idx.printTree(indent + 2)
         self.value.printTree(indent + 1)
-        
+
     
-    @addToClass(AST.ArrayAccess)
+    @addToClass(AST.MatrixAccess)
     def printTree(self, indent = 0) :
-        print(indent_string(indent) + ARRAY_READ)
+        print(indent_string(indent) + MATRIX_ACCESS)
         print(indent_string(indent + 1) + self.id)
         for idx in self.indices :
             idx.printTree(indent + 2)
@@ -77,6 +82,11 @@ class TreePrinter:
     @addToClass(AST.Transpose)
     def printTree(self, indent=0):
         print(indent_string(indent) + TRANSPOSE)
+        self.value.printTree(indent + 1)
+
+    @addToClass(AST.UnaryExpr)
+    def printTree(self, indent=0):
+        print(indent_string(indent) + UMINUS)
         self.value.printTree(indent + 1)
 
 
@@ -113,7 +123,6 @@ class TreePrinter:
             instruction.printTree(indent + 1)
 
 
-
     @addToClass(AST.RelationExpr)
     def printTree(self, indent=0):
         print(indent_string(indent) + self.op)
@@ -126,10 +135,16 @@ class TreePrinter:
         print(indent_string(indent) + IF)
         self.condition.printTree(indent + 1)
         print(indent_string(indent) + THEN)
-        self.instructions.printTree(indent + 1)
+        for instruction in self.instructions :
+            instruction.printTree(indent + 1)
+        # self.instructions.printTree(indent + 1)
         if self.else_instruction:
             print(indent_string(indent) + ELSE)
-            self.else_instruction.printTree(indent + 1)
+            try :
+                for instruction in self.else_instruction :
+                    instruction.printTree(indent + 1)
+            except :
+                self.else_instruction.printTree(indent + 1)
 
     @addToClass(AST.ContinueInstruction)
     def printTree(self, indent = 0) :
@@ -142,3 +157,8 @@ class TreePrinter:
     @addToClass(AST.ReturnInstruction)
     def printTree(self, indent = 0) :
         print(indent_string(indent) + RETURN)
+
+
+
+
+from lab3.TreePrinter import TreePrinter

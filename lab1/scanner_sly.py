@@ -4,14 +4,14 @@ from tokens_names import *
 class Scanner(Lexer):
 
     ignore = r' \t'
-    ignore_comment = r'#.*'
+    ignore_comment = r'[#%].*'
     ignore_newline = r'\n'
 
     tokens = {
         PLUS, MINUS, TIMES, DIVIDE, ASSIGN, ADDASSIGN,
         SUBASSIGN, MULASSIGN, DIVASSIGN, LPAREN, RPAREN, LBRACE, RBRACE,
         LBRACKET, RBRACKET, DOTADD, DOTSUB, DOTMUL, DOTDIV,
-        EQ, NEQ, LT, LTE, GT, GTE, RANGE, COMMA, LINE_END, TRANSPOSE,
+        EQ, NEQ, LT, LTE, GT, GTE, COLON, COMMA, LINE_END, TRANSPOSE,
         FOR, WHILE, IF, ELSE, RETURN, BREAK, CONTINUE, EYE, ZEROS, ONES, PRINT,
         ID, INTNUM, FLOATNUM, STRING
     }
@@ -46,7 +46,7 @@ class Scanner(Lexer):
     DOTMUL = r'\.\*'
     DOTDIV = r'\./'
 
-    RANGE = r':'
+    COLON = r':'
     COMMA = r','
     LINE_END = r';'
 
@@ -89,6 +89,6 @@ class Scanner(Lexer):
         t.value = int(t.value)
         return t
 
-    @_(r'#.*') # type: ignore
+    @_(r'[#%].*') # type: ignore
     def ignore_comment(self, t):
         pass
