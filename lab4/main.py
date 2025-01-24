@@ -27,7 +27,7 @@ def main():
         ast.printTree()
         print()
         typeChecker = TypeChecker()
-        typeChecker.visit(ast)
+        typeChecker.visit_first(ast)
 
 
 if __name__ == '__main__':
