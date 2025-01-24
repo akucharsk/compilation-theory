@@ -12,11 +12,11 @@ n = 2;
 m = 3;
 
 A = ones(n, m);
-B = [[12, 15, 18], [12, 15, 18]];
+B = eye(m);
 
 print A;
 print B;
 
-C = B / A;
+C = A * B;
 
 print C;

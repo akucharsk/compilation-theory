@@ -6,7 +6,6 @@ from lab5.Memory import *
 from lab5.Exceptions import  *
 from lab5.visit import *
 from tokens_names import *
-from util import matrix_divide
 
 import sys
 
@@ -129,8 +128,6 @@ class Interpreter(object):
         r2 = self.visit(node.right)
         if node.op == TIMES :
             return np.dot(r1, r2)
-        if node.op == DIVIDE :
-            return matrix_divide(r1, r2)
         return self.operator_functions[node.op](r1, r2)
 
     @when(AST.UnaryExpr)
