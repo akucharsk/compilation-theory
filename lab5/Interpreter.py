@@ -22,7 +22,7 @@ class Interpreter(object):
         DOTADD : lambda x, y: x + y,
         MINUS : lambda x, y: x - y,
         DOTSUB : lambda x, y: x - y,
-        TIMES : lambda x, y: x * y,
+        TIMES : np.dot,
         DOTMUL : lambda x, y: x * y,
         DIVIDE : lambda x, y: x / y,
         DOTDIV : lambda x, y: x / y,
@@ -126,8 +126,6 @@ class Interpreter(object):
         if DEBUG: print("Visiting", node)
         r1 = self.visit(node.left)
         r2 = self.visit(node.right)
-        if node.op == TIMES :
-            return np.dot(r1, r2)
         return self.operator_functions[node.op](r1, r2)
 
     @when(AST.UnaryExpr)
